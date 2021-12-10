@@ -11,15 +11,16 @@ import java.io.File;
  *
  * @author erick
  */
-public class Nodo{
-    Cliente_multidifusion_N ClienteMulticastNodo;
-    Cliente_RMI_N ClienteRMI;
+public class Nodo {
+
+    private final ClienteMultidifusionNodo ClienteMulticastNodo;
+    ClienteRMINodo ClienteRMI;
     int pto;
     ID mio;
-        
-    Nodo(String IP, int puerto) throws InterruptedException {
+
+    public Nodo(String IP, int puerto) throws InterruptedException {
         mio = new ID(IP, puerto);
-        ClienteMulticastNodo = new Cliente_multidifusion_N(puerto, this); 
+        ClienteMulticastNodo = new ClienteMultidifusionNodo(puerto, this);
         new Thread(ClienteMulticastNodo).start();
     }
 
@@ -31,12 +32,12 @@ public class Nodo{
         this.pto = pto;
     }
 
-    public void buscar(){
-        ClienteRMI = new Cliente_RMI_N(pto);
-        
+    public void buscar() {
+        ClienteRMI = new ClienteRMINodo(pto);
+
     }
-    
-    public void CrearCarpeta(String puerto){
+
+    public void CrearCarpeta(String puerto) {
         String NuevaCarpeta = "Carpetas/" + puerto;
         File carpeta = new File(NuevaCarpeta);
         carpeta.mkdir();

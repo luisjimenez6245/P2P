@@ -12,17 +12,18 @@ import java.io.File;
  * @author erick
  */
 public class SuperNodo {
-    Cliente_multidifusion_SN ClienteMulticast;
-    private Servidor_multidifusion ServidorMulticast;
-    private Servidor_RMI ServidorRMI;
-    ID mio;
     
+    ClienteMultidifusionSuperNodo ClienteMulticast;
+    private ServidorMultidifusion ServidorMulticast;
+    private ServidorRMI ServidorRMI;
+    ID mio;
+
     SuperNodo(String IP, int puerto) throws InterruptedException {
         mio = new ID(IP, puerto);
-        ServidorMulticast = new Servidor_multidifusion(puerto);
-        ClienteMulticast = new Cliente_multidifusion_SN(this);
-        ServidorRMI = new Servidor_RMI(this);
-        
+        ServidorMulticast = new ServidorMultidifusion(puerto);
+        ClienteMulticast = new ClienteMultidifusionSuperNodo(this);
+        ServidorRMI = new ServidorRMI(this);
+
         new Thread(ServidorMulticast).start();
         new Thread(ClienteMulticast).start();
         new Thread(ServidorRMI).start();

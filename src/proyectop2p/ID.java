@@ -10,8 +10,9 @@ package proyectop2p;
  * @author erick
  */
 public class ID {
-    private int puerto;
-    private String ip;
+    
+    private final int puerto;
+    private final String ip;
     
     public ID(String ip, int puerto) {
         this.puerto = puerto;

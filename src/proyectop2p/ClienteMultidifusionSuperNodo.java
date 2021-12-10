@@ -23,20 +23,20 @@ import java.util.List;
  *
  * @author erick
  */
-public class Cliente_multidifusion_N implements Runnable{
-    int pto, puerto;
-    private List<Integer> ListaPuertos;
-    private List<String> ListaIP;
-    Nodo nodo;
-    
-    public Cliente_multidifusion_N(int puerto, Nodo nodo) {
-        this.puerto = puerto;
-        this.pto = 2000;
+public class ClienteMultidifusionSuperNodo implements Runnable {
+
+    static private List<String> ListaConectados;
+    static private List<Integer> ListaPuertos;
+    static private List<String> ListaTiempos;
+    SuperNodo sn;
+
+    public ClienteMultidifusionSuperNodo(SuperNodo sn) {
+        ListaConectados = new ArrayList<>();
+        ListaTiempos = new ArrayList<>();
         ListaPuertos = new ArrayList<>();
-        ListaIP = new ArrayList<>();
-        this.nodo = nodo;
+        this.sn = sn;
     }
-    
+
     @Override
     public void run() {
         escuchar();
@@ -45,7 +45,7 @@ public class Cliente_multidifusion_N implements Runnable{
     private void escuchar() {
         try {
             NetworkInterface ni = NetworkInterface.getByName("lo");
-            InetSocketAddress dir = new InetSocketAddress(pto);
+            InetSocketAddress dir = new InetSocketAddress(2000);
             DatagramChannel s = DatagramChannel.open(StandardProtocolFamily.INET);
             s.setOption(StandardSocketOptions.SO_REUSEADDR, true);
             s.setOption(StandardSocketOptions.IP_MULTICAST_IF, ni);
@@ -58,14 +58,12 @@ public class Cliente_multidifusion_N implements Runnable{
 
             s.register(sel, SelectionKey.OP_READ);
 
-            ByteBuffer b = ByteBuffer.allocate(10);
-            
-            Tiempo t = new Tiempo();
-            
-            Thread h = new Thread(t);
-            h.start();
-            
-            while (t.getTiempo() > 0) {
+            ByteBuffer b = ByteBuffer.allocate(100);
+
+            Tiempo t[] = new Tiempo[100];
+            int i = 0;
+
+            while (true) {
                 sel.select();
                 Iterator<SelectionKey> it = sel.selectedKeys().iterator();
                 while (it.hasNext()) {
@@ -75,44 +73,80 @@ public class Cliente_multidifusion_N implements Runnable{
                     if (k.isReadable()) {
                         DatagramChannel ch = (DatagramChannel) k.channel();
                         b.clear();
-                        
+
                         SocketAddress emisor = ch.receive(b);
                         b.flip();
-                        
+
                         InetSocketAddress d = (InetSocketAddress) emisor;
-                        
+
                         int puerto = b.getInt();
-                        String IP = d.getHostString();
-                        
-                        if (ListaPuertos.isEmpty()){
+                        String info = d.getHostString() + ":" + puerto;
+
+                        if (ListaConectados.isEmpty() && puerto != sn.mio.getPuerto()) {
+                            ListaConectados.add(info);
                             ListaPuertos.add(puerto);
-                            ListaIP.add(IP);
-                        } else if (!ListaPuertos.contains(puerto)){
+
+                            t[i] = new Tiempo();
+                            ListaTiempos.add(String.valueOf(t[i].getTiempo()));
+
+                            Thread h = new Thread(t[i]);
+                            h.start();
+                            i++;
+                        } else if (!ListaPuertos.contains(puerto) && puerto != sn.mio.getPuerto()) {
+                            ListaConectados.add(info);
                             ListaPuertos.add(puerto);
-                            ListaIP.add(IP);
+
+                            t[i] = new Tiempo();
+
+                            ListaTiempos.add(String.valueOf(t[i].getTiempo()));
+
+                            Thread h = new Thread(t[i]);
+                            h.start();
+                            i++;
+                        } else if(ListaPuertos.contains(puerto)) {
+                            int pos = ListaPuertos.indexOf(puerto);
+
+                            t[pos].setTiempo();
                         }
                     }
+
+                    for (int j = 0; j < ListaTiempos.size(); j++) {
+                        int tiempo = t[j].getTiempo();
+
+                        if (tiempo == 0) {
+                            ListaConectados.remove(j);
+                            ListaPuertos.remove(j);
+                            ListaTiempos.remove(j);
+
+                        } else {
+                            ListaTiempos.set(j, String.valueOf(tiempo));
+                        }
+                    }
+
                 }//while
             }
-            
-            int tam = ListaPuertos.size();
-                        
-            int n = (int) Math.floor(Math.random()*tam);
-                        
-            int sn = ListaPuertos.get(n);
-            System.out.println(sn);
-            
-            nodo.setPto(sn); 
-            nodo.CrearCarpeta(String.valueOf(puerto));
         } catch (Exception e) {
             e.printStackTrace();
         }//catch
     }
-    
+
+    public static List<String> getListaConectados() {
+        return ListaConectados;
+    }
+
+    public static List<String> getListaTiempos() {
+        return ListaTiempos;
+    }
+
     static class Tiempo implements Runnable {
+
         int t;
 
         public Tiempo() {
+            this.t = 30;
+        }
+
+        void setTiempo() {
             this.t = 30;
         }
 

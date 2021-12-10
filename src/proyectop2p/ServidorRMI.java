@@ -6,34 +6,31 @@
 package proyectop2p;
 
 import java.io.File;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
+
 
 /**
  *
  * @author erick
  */
-public class Servidor_RMI implements Runnable{
-    private ID id_mio;
+public class ServidorRMI implements Runnable{
+    
+    private final ID id;
     private File directorio;
     private SuperNodo nodo_yo;
     
-    Servidor_RMI(SuperNodo nodo) {
-        this.directorio = directorio;
+    public ServidorRMI(SuperNodo nodo) {
         this.nodo_yo = nodo;
-        this.id_mio = nodo.mio;
+        this.id = nodo.mio;
     }
     
     public void run() {
         try {
             //puerto default del rmiregistry
-            java.rmi.registry.LocateRegistry.createRegistry(id_mio.getPuerto());
-            System.out.println("RMI registro listo en el puerto "+ id_mio.getPuerto());
-            System.out.println(java.rmi.registry.LocateRegistry.getRegistry(id_mio.getPuerto()));
+            java.rmi.registry.LocateRegistry.createRegistry(id.getPuerto());
+            System.out.println("RMI registro listo en el puerto "+ id.getPuerto());
+            System.out.println(java.rmi.registry.LocateRegistry.getRegistry(id.getPuerto()));
         } catch (Exception e) {
             System.out.println("Excepcion RMI del registry:");
-            e.printStackTrace();
         }//catch
         try {
             System.setProperty("java.rmi.server.codebase", "file:/tmp/Archivos/");
@@ -42,7 +39,6 @@ public class Servidor_RMI implements Runnable{
             System.err.println("Servidor listo...");
         } catch (Exception e) {
             System.err.println("Excepción del servidor: " + e.toString());
-            e.printStackTrace();
         }
     }
 }

@@ -6,21 +6,20 @@
 package proyectop2p;
 
 import java.util.List;
-import java.util.Set;
 import javax.swing.DefaultListModel;
 
 /**
  *
  * @author erick
  */
-public class Actualiza_ventana implements Runnable {
+public class ActualizaVentana implements Runnable {
 
-    private VentanaSuperNodo venSN;
-    private VentanaNodo venN;
-    List<String> elementos;
-    DefaultListModel modelo = new DefaultListModel();
+    private final VentanaSuperNodo venSN;
+    private final VentanaNodo venN;
+    private List<String> elementos;
+    private DefaultListModel modelo = new DefaultListModel();
 
-    public Actualiza_ventana(VentanaSuperNodo venSN, VentanaNodo venN) {
+    public ActualizaVentana(VentanaSuperNodo venSN, VentanaNodo venN) {
         this.venSN = venSN;
         this.venN = venN;
     }
@@ -30,7 +29,6 @@ public class Actualiza_ventana implements Runnable {
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
-            e.printStackTrace();
         }
         for (;;) {
             try {
@@ -48,7 +46,6 @@ public class Actualiza_ventana implements Runnable {
 
                 Thread.sleep(500);
             } catch (InterruptedException ie) {
-                ie.printStackTrace();
             }
         }
     }
@@ -57,9 +54,9 @@ public class Actualiza_ventana implements Runnable {
         modelo = new DefaultListModel();
         lista.removeAll();
 
-        for (String u : elementos) {
+        elementos.forEach(u -> {
             modelo.addElement(u);
-        }
+        });
         lista.setModel(modelo);
     }
 }

@@ -92,7 +92,7 @@ public class VentanaNodo extends javax.swing.JFrame {
         getContentPane().add(EnviarButton);
         EnviarButton.setBounds(300, 220, 100, 20);
 
-        Actualiza_ventana act = new Actualiza_ventana(null,this);
+        ActualizaVentana act = new ActualizaVentana(null,this);
         new Thread(act).start();
     }// </editor-fold>//GEN-END:initComponents
 

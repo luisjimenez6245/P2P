@@ -139,7 +139,7 @@ public class VentanaSuperNodo extends javax.swing.JFrame {
         Archivos.setForeground(new java.awt.Color(0, 102, 102));
         jScrollPane15.setViewportView(Archivos);
 
-        Actualiza_ventana act = new Actualiza_ventana(this, null);
+        ActualizaVentana act = new ActualizaVentana(this, null);
         new Thread(act).start();
     }// </editor-fold>//GEN-END:initComponents
 

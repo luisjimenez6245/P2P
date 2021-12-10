@@ -5,7 +5,6 @@
  */
 package proyectop2p;
 
-import java.awt.event.ActionEvent;
 import java.awt.event.WindowEvent;
 import javax.swing.JLabel;
 
@@ -93,7 +92,7 @@ public class VentanaNodo extends javax.swing.JFrame {
         getContentPane().add(EnviarButton);
         EnviarButton.setBounds(300, 220, 100, 20);
 
-        Actualiza_ventana act = new Actualiza_ventana(null,this);
+        ActualizaVentana act = new ActualizaVentana(null,this);
         new Thread(act).start();
     }// </editor-fold>//GEN-END:initComponents
 

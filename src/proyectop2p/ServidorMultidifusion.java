@@ -5,6 +5,7 @@
  */
 package proyectop2p;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
@@ -21,13 +22,14 @@ import java.util.Iterator;
  *
  * @author erick
  */
-public class Servidor_multidifusion implements Runnable{
-    int pto;
-    
-    public Servidor_multidifusion(int pto) {
+public class ServidorMultidifusion implements Runnable {
+
+    private final int pto;
+
+    public ServidorMultidifusion(int pto) {
         this.pto = pto;
     }
-    
+
     @Override
     public void run() {
         anunciar();
@@ -41,7 +43,6 @@ public class Servidor_multidifusion implements Runnable{
             try {
                 remote = new InetSocketAddress(hhost, 2000);
             } catch (Exception e) {
-                e.printStackTrace();
             }//catch
 
             NetworkInterface ni = NetworkInterface.getByName("lo");
@@ -67,15 +68,14 @@ public class Servidor_multidifusion implements Runnable{
 
                     if (k.isWritable()) {
                         DatagramChannel ch = (DatagramChannel) k.channel();
-                         b.flip();
+                        b.flip();
                         ch.send(b, remote);
                     }
                 }//while
                 Thread.sleep(5000);
             }
             //System.out.println("Termina envio de datagramas");
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException | InterruptedException e) {
         }//catch
     }
 }

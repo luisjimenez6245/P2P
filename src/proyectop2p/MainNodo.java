@@ -5,14 +5,18 @@
  */
 package proyectop2p;
 
-import javax.swing.*;
+import javax.swing.JOptionPane;
 
 /**
  *
  * @author erick
  */
-public class Main {
+public class MainNodo {
+
     public static void main(String[] args) throws InterruptedException {
-            new VentanaSuperNodo(new SuperNodo(JOptionPane.showInputDialog("Ingrese la direccion IP"),Integer.parseInt(JOptionPane.showInputDialog("Ingrese el puerto"))));
+        String ip = JOptionPane.showInputDialog("Ingrese la direccion IP");
+        int port =   Integer.parseInt(JOptionPane.showInputDialog("Ingrese el puerto"));
+        Nodo nodo = new Nodo(ip, port);
+        new VentanaNodo(nodo);
     }
 }

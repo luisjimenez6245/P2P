@@ -12,10 +12,10 @@ import java.rmi.registry.Registry;
  *
  * @author erick
  */
-public class Cliente_RMI_N {
+public class ClienteRMINodo {
     int pto;
     
-    public Cliente_RMI_N(int pto) {
+    public ClienteRMINodo(int pto) {
         this.pto = pto;
     }
        

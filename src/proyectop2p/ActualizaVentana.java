@@ -33,10 +33,10 @@ public class ActualizaVentana implements Runnable {
         for (;;) {
             try {
                 if (venSN != null) {
-                    elementos = venSN.nodo.ClienteMulticast.getListaConectados();
+                    elementos = venSN.nodo.clienteMulticast.getListaConectados();
                     actualizar(venSN.ActivosListaSN, elementos);
 
-                    elementos = venSN.nodo.ClienteMulticast.getListaTiempos();
+                    elementos = venSN.nodo.clienteMulticast.getListaTiempos();
                     actualizar(venSN.TiempoSN, elementos);
                 }
                 

@@ -16,11 +16,11 @@ public class ServidorRMI implements Runnable{
     
     private final ID id;
     private File directorio;
-    private SuperNodo nodo_yo;
+    private SuperNodo superNodo;
     
     public ServidorRMI(SuperNodo nodo) {
-        this.nodo_yo = nodo;
-        this.id = nodo.mio;
+        this.superNodo = nodo;
+        this.id = nodo.id;
     }
     
     public void run() {

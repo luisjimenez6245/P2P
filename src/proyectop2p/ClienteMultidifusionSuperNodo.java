@@ -82,7 +82,7 @@ public class ClienteMultidifusionSuperNodo implements Runnable {
                         int puerto = b.getInt();
                         String info = d.getHostString() + ":" + puerto;
 
-                        if (ListaConectados.isEmpty() && puerto != sn.mio.getPuerto()) {
+                        if (ListaConectados.isEmpty() && puerto != sn.id.getPuerto()) {
                             ListaConectados.add(info);
                             ListaPuertos.add(puerto);
 
@@ -92,7 +92,7 @@ public class ClienteMultidifusionSuperNodo implements Runnable {
                             Thread h = new Thread(t[i]);
                             h.start();
                             i++;
-                        } else if (!ListaPuertos.contains(puerto) && puerto != sn.mio.getPuerto()) {
+                        } else if (!ListaPuertos.contains(puerto) && puerto != sn.id.getPuerto()) {
                             ListaConectados.add(info);
                             ListaPuertos.add(puerto);
 

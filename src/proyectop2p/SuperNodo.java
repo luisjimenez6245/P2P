@@ -5,27 +5,28 @@
  */
 package proyectop2p;
 
-import java.io.File;
-
 /**
  *
  * @author erick
  */
 public class SuperNodo {
+
+    public final ClienteMultidifusionSuperNodo clienteMulticast;
+    private final ServidorMultidifusion servidorMulticast;
+    private final ServidorRMI servidorRMI;
+    public final ID id;
     
-    ClienteMultidifusionSuperNodo ClienteMulticast;
-    private ServidorMultidifusion ServidorMulticast;
-    private ServidorRMI ServidorRMI;
-    ID mio;
 
-    SuperNodo(String IP, int puerto) throws InterruptedException {
-        mio = new ID(IP, puerto);
-        ServidorMulticast = new ServidorMultidifusion(puerto);
-        ClienteMulticast = new ClienteMultidifusionSuperNodo(this);
-        ServidorRMI = new ServidorRMI(this);
-
-        new Thread(ServidorMulticast).start();
-        new Thread(ClienteMulticast).start();
-        new Thread(ServidorRMI).start();
+    public SuperNodo(String IP, int puerto) throws InterruptedException {
+        id = new ID(IP, puerto);
+        servidorMulticast = new ServidorMultidifusion(puerto);
+        clienteMulticast = new ClienteMultidifusionSuperNodo(this);
+        servidorRMI = new ServidorRMI(this);
+    }
+    
+    public void start(){
+        new Thread(servidorMulticast).start();
+        new Thread(clienteMulticast).start();
+        new Thread(servidorRMI).start();
     }
 }

@@ -11,8 +11,12 @@ import javax.swing.*;
  *
  * @author erick
  */
-public class Main {
+public class MainSuperNodo {
+
     public static void main(String[] args) throws InterruptedException {
-            new VentanaSuperNodo(new SuperNodo(JOptionPane.showInputDialog("Ingrese la direccion IP"),Integer.parseInt(JOptionPane.showInputDialog("Ingrese el puerto"))));
+        String ip = JOptionPane.showInputDialog("Ingrese la direccion IP");
+        int port =   Integer.parseInt(JOptionPane.showInputDialog("Ingrese el puerto"));
+        SuperNodo nodo = new SuperNodo(ip, port);
+        new VentanaSuperNodo(nodo);
     }
 }

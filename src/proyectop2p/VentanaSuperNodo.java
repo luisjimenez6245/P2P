@@ -6,7 +6,6 @@
 package proyectop2p;
 
 import java.awt.event.WindowEvent;
-import javax.swing.JLabel;
 
 /**
  *
@@ -21,7 +20,7 @@ public class VentanaSuperNodo extends javax.swing.JFrame {
         this.nodo = nodo;
 
         this.setVisible(true);
-        this.setTitle("Super-nodo " + nodo.mio.getIp() + ":" + nodo.mio.getPuerto());
+        this.setTitle("Super-nodo " + nodo.id.getIp() + ":" + nodo.id.getPuerto());
     }
 
     /**
@@ -82,12 +81,12 @@ public class VentanaSuperNodo extends javax.swing.JFrame {
         ActivosListaSN.setFont(new java.awt.Font("Franklin Gothic Medium", 2, 12)); // NOI18N
         ActivosListaSN.setForeground(new java.awt.Color(0, 102, 102));
         jScrollPane1.setViewportView(ActivosListaSN);
-        
+
         jLabel2.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         jLabel2.setText("Tiempo");
         getContentPane().add(jLabel2);
         jLabel2.setBounds(156, 40, 100, 50);
-        
+
         jScrollPane12.setAutoscrolls(true);
         getContentPane().add(jScrollPane12);
         jScrollPane12.setBounds(138, 80, 100, 200);
@@ -96,7 +95,7 @@ public class VentanaSuperNodo extends javax.swing.JFrame {
         TiempoSN.setFont(new java.awt.Font("Franklin Gothic Medium", 2, 12)); // NOI18N
         TiempoSN.setForeground(new java.awt.Color(0, 102, 102));
         jScrollPane12.setViewportView(TiempoSN);
-        
+
         jLabel3.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         jLabel3.setText("Nodos");
         getContentPane().add(jLabel3);
@@ -110,12 +109,12 @@ public class VentanaSuperNodo extends javax.swing.JFrame {
         ActivosListaN.setFont(new java.awt.Font("Franklin Gothic Medium", 2, 12)); // NOI18N
         ActivosListaN.setForeground(new java.awt.Color(0, 102, 102));
         jScrollPane13.setViewportView(ActivosListaN);
-        
+
         jLabel4.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         jLabel4.setText("Tiempo");
         getContentPane().add(jLabel4);
         jLabel4.setBounds(396, 40, 100, 50);
-        
+
         jScrollPane14.setAutoscrolls(true);
         getContentPane().add(jScrollPane14);
         jScrollPane14.setBounds(378, 80, 100, 200);
@@ -124,12 +123,12 @@ public class VentanaSuperNodo extends javax.swing.JFrame {
         TiempoN.setFont(new java.awt.Font("Franklin Gothic Medium", 2, 12)); // NOI18N
         TiempoN.setForeground(new java.awt.Color(0, 102, 102));
         jScrollPane14.setViewportView(TiempoN);
-        
+
         jLabel5.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         jLabel5.setText("Archivos");
         getContentPane().add(jLabel5);
         jLabel5.setBounds(516, 40, 100, 50);
-        
+
         jScrollPane15.setAutoscrolls(true);
         getContentPane().add(jScrollPane15);
         jScrollPane15.setBounds(498, 80, 100, 200);

@@ -14,9 +14,23 @@ import java.rmi.registry.Registry;
  */
 public class ClienteRMINodo {
     int pto;
+    FuncionesRMI stub;
+    Registry registry;
+
     
     public ClienteRMINodo(int pto) {
         this.pto = pto;
+    }
+
+    public void Conectar(){
+        try {
+            registry = LocateRegistry.getRegistry(pto);
+            stub = (FuncionesRMI) registry.lookup("FuncionesRMI");
+            
+        } catch (Exception e) {
+            System.err.println("Excepción del cliente: " +e.toString());
+            e.printStackTrace();
+        }
     }
        
     public void BuscarArchivo(){

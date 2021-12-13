@@ -96,16 +96,28 @@ public class VentanaNodo extends javax.swing.JFrame {
         new Thread(act).start();
     }// </editor-fold>//GEN-END:initComponents
 
+    
     private void EnviarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EnviarButtonActionPerformed
+        String nombre_buscar = NombreText.getText();
 
+        int ubicacion = nodo.buscar(nombre_buscar);
+
+        if (ubicacion == -1) {
+            escribir_texto("No se encontró el archivo");
+        } else {
+            escribir_texto("Si se encontró en " + ubicacion);
+            descargar(nombre_buscar, ubicacion);
+        }
     }
 
     private void escribir_texto(String mensaje) {
-
+        nodo.mensaje.mensaje += "<br/>" + mensaje;
     }
 
-    private void descargar(String nombre) {
-
+    private void descargar(String nombre, int ubicacion) {
+        ClienteDeFlujo cliente_de_flujo = new ClienteDeFlujo(ubicacion, nombre, nodo.ObtenerDirectorio());
+        new Thread(cliente_de_flujo).start();
+        escribir_texto(nombre + " descargado con exito");
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

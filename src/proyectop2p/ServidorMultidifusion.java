@@ -56,8 +56,8 @@ public class ServidorMultidifusion implements Runnable {
             Selector sel = Selector.open();
             cl.register(sel, SelectionKey.OP_WRITE);
 
-            ByteBuffer b = ByteBuffer.allocate(100);
-            b.putInt(pto);
+            String mensaje = pto + " S";
+            ByteBuffer b = ByteBuffer.allocate(6);
 
             while (true) {
                 sel.select();
@@ -68,8 +68,10 @@ public class ServidorMultidifusion implements Runnable {
 
                     if (k.isWritable()) {
                         DatagramChannel ch = (DatagramChannel) k.channel();
+                        b.clear();
+                        b.put(mensaje.getBytes());
                         b.flip();
-                        ch.send(b, remote);
+                        ch.send(b, remote);                        
                     }
                 }//while
                 Thread.sleep(5000);

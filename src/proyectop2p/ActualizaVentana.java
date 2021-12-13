@@ -17,11 +17,12 @@ public class ActualizaVentana implements Runnable {
     private final VentanaSuperNodo venSN;
     private final VentanaNodo venN;
     private List<String> elementos;
-    private DefaultListModel modelo = new DefaultListModel();
+    private  DefaultListModel modelo;
 
     public ActualizaVentana(VentanaSuperNodo venSN, VentanaNodo venN) {
         this.venSN = venSN;
         this.venN = venN;
+        modelo = new DefaultListModel();
     }
 
     @Override

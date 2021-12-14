@@ -23,7 +23,7 @@ public class Cliente {
 
     private void conectar(int port) throws RemoteException, NotBoundException {
 
-        registry2 = LocateRegistry.getRegistry(port);
+        /*registry2 = LocateRegistry.getRegistry(port);
         stub2 = (Methods) registry2.lookup("Methods");
 
         listaNombres = stub2.getNombre();
@@ -64,14 +64,15 @@ public class Cliente {
             }
 
             tam = stub.getNombre().size();
-        }
+        }*/
 
     }
 
     public void run() {
         for (;;) {
             try {
-
+                
+                /*
                 for (int p : PuertosSN) {
 
                     for (int i = 0; i < tam; i++) {
@@ -181,7 +182,7 @@ public class Cliente {
                             }
                         }
                     }
-                }
+                }*/
                 Thread.sleep(4333);
             } catch (Exception e) {
                 System.err.println("Excepción del cliente: " + e.toString());

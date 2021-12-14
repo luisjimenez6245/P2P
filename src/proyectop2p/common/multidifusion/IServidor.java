@@ -26,7 +26,7 @@ import java.util.logging.Logger;
  * @author luis
  */
 public abstract class IServidor implements Runnable {
-    
+
     private final int port;
     private final String networkInterfaceName;
     private final String multicastAddr;
@@ -35,14 +35,14 @@ public abstract class IServidor implements Runnable {
     protected SocketAddress remote;
     protected Selector selector;
     protected NetworkInterface networkInterface;
-    
+
     protected IServidor(int port, String networkInterfaceName, String multicastAddr) {
         this.port = port;
         this.networkInterfaceName = networkInterfaceName;
         this.multicastAddr = multicastAddr;
-        
+
     }
-    
+
     private void initialize() throws SocketException, IOException {
         address = new InetSocketAddress(port);
         networkInterface = NetworkInterface.getByName(networkInterfaceName);
@@ -57,9 +57,12 @@ public abstract class IServidor implements Runnable {
         selector = Selector.open();
         channel.register(selector, SelectionKey.OP_WRITE);
     }
-    
-    protected void defaultAction() throws InterruptedException, IOException {
-        ByteBuffer buf = ByteBuffer.allocate(4);
+
+    protected void defaultAction(String type) throws InterruptedException, IOException {
+        String mensaje = port + " " + type;
+
+        ByteBuffer buf = ByteBuffer.allocate(6);
+
         Iterator<SelectionKey> it = selector.selectedKeys().iterator();
         while (it.hasNext()) {
             SelectionKey key = it.next();
@@ -67,24 +70,24 @@ public abstract class IServidor implements Runnable {
             if (key.isWritable()) {
                 DatagramChannel ch = (DatagramChannel) key.channel();
                 buf.clear();
-                buf.putInt(2000);
+                buf.put(mensaje.getBytes());
                 buf.flip();
                 ch.send(buf, remote);
             }
         }
         Thread.sleep(5000);
     }
-    
+
     protected abstract void action() throws Exception;
 
-    private void call(){
+    private void call() {
         try {
             action();
         } catch (Exception ex) {
             Logger.getLogger(IServidor.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     @Override
     public void run() {
         try {
@@ -96,5 +99,5 @@ public abstract class IServidor implements Runnable {
             Logger.getLogger(IServidor.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
 }

@@ -5,40 +5,69 @@ import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
+import proyectop2p.common.Id;
 
 import proyectop2p.common.Tiempo;
-import proyectop2p.common.multidifusion.ClientHelper;
 import proyectop2p.common.multidifusion.ICliente;
 
 public class ClienteMultidifusion extends ICliente {
 
-    private Map<String, ClientHelper> mapaClientes;
+    private final IMultidifusionCallback callback;
 
-    protected ClienteMultidifusion(int port, String networkInterfaceName, String multicastAddr) {
-        super(port, networkInterfaceName, multicastAddr);
-        mapaClientes = new HashMap<String, ClientHelper>();
+    protected ClienteMultidifusion(
+            int port,
+            String networkInterfaceName,
+            IMultidifusionCallback callback
+    ) {
+        super(port, networkInterfaceName, "228.1.1.10");
+        this.callback = callback;
+
     }
 
-    private void add(String info, int puerto) {
-        ClientHelper ch = new ClientHelper();
-        ch.info = info;
-        ch.port = puerto;
-        ch.tiempo = new Tiempo();
-        Thread h = new Thread(ch.tiempo);
-        h.start();
-        mapaClientes.put(info, new ClientHelper());
-    }
-
-    private void cleanClients() {
-        for (java.util.Map.Entry<String, ClientHelper> item : mapaClientes.entrySet()) {
-            ClientHelper ch = item.getValue();
-            if (ch.tiempo.getTiempo() == 0) {
-                mapaClientes.remove(item.getKey());
+    private void addNode(String host, int port_helper) {
+        String url = host + ":" + port_helper;
+        if (!callback.checkIfNodeExists(url)) {
+            if (callback.canConnectNode()) {
+                Id ch = new Id();
+                ch.id = url;
+                ch.host = host;
+                ch.port = port_helper;
+                ch.isSuperNode = false;
+                ch.tiempo = new Tiempo();
+                Thread h = new Thread(ch.tiempo);
+                h.start();
+                callback.addNode(ch);
             }
+        } else {
+            callback.addTimeNode(url);
         }
+    }
+
+    private void addSuperNode(String host, int port_helper) {
+        String url = host + ":" + port_helper;
+        if (!callback.checkIfSuperNodeExists(url)) {
+            Id ch = new Id();
+            ch.host = host;
+            ch.id = url;
+            ch.port = port_helper;
+            ch.isSuperNode = true;
+            ch.tiempo = new Tiempo();
+            Thread h = new Thread(ch.tiempo);
+            h.start();
+            callback.addSuperNode(ch);
+        } else {
+            callback.addTimeSuperNode(url);
+        }
+
+    }
+
+    private void cleanSuperNodes() {
+        callback.cleanSuperNodes();
+    }
+
+    private void cleanNodes() {
+        callback.cleanNodes();
     }
 
     @Override
@@ -46,28 +75,36 @@ public class ClienteMultidifusion extends ICliente {
         selector.select();
         Iterator<SelectionKey> it = selector.selectedKeys().iterator();
         ByteBuffer b = ByteBuffer.allocate(100);
+        byte[] bytes;
         while (it.hasNext()) {
             SelectionKey k = it.next();
             it.remove();
             if (k.isReadable()) {
                 DatagramChannel ch = (DatagramChannel) k.channel();
-                b.clear();
 
                 SocketAddress emisor = ch.receive(b);
+                InetSocketAddress d = (InetSocketAddress) emisor;
+                b.clear();
+                bytes = new byte[b.limit()];
+                b.get(bytes, 0, b.limit());
                 b.flip();
 
-                InetSocketAddress d = (InetSocketAddress) emisor;
+                String[] datos = new String(bytes).split(" ");
+                int port_helper = Integer.parseInt(datos[0].trim());
+                String opc = datos[1].trim();
+                String host = d.getHostString();
 
-                int puerto = b.getInt();
-                String hostHelper = d.getHostString() + ":" + puerto;
-                if (!mapaClientes.containsKey(hostHelper) && puerto != port) {
-                    add(hostHelper, puerto);
-                } else if (mapaClientes.containsKey(hostHelper)) {
-                    mapaClientes.get(hostHelper).tiempo.setTiempo();
+                if (opc.contains("S")) {
+                    addSuperNode(host, port_helper);
+                } else {
+                    addNode(host, port_helper);
                 }
+
             }
         }
-        cleanClients();
+        cleanSuperNodes();
+        cleanNodes();
+        Thread.sleep(5000);
     }
 
 }

@@ -3,17 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package common;
+package proyectop2p.common;
 
 /**
  *
  * @author luis
  */
-public interface IView {
+public class Id {
 
-    void loadView();
+    public String id;
+    public String host;
+    public int port;
+    public boolean isSuperNode;
+    public Tiempo tiempo;
 
-    void loadContent();
-
-    void loadActions();
 }

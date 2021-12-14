@@ -7,7 +7,6 @@ public class Tiempo implements Runnable {
     public Tiempo() {
         this.t = 30;
     }
-    
 
     public void setTiempo() {
         this.t = 30;
@@ -17,15 +16,21 @@ public class Tiempo implements Runnable {
         return this.t;
     }
 
-    @Override
-    public void run() {
+    private void action() {
         try {
             while (t > 0) {
                 t--;
 
                 Thread.sleep(1000);
             }
+
         } catch (Exception e) {
         }
+
+    }
+
+    @Override
+    public void run() {
+        action();
     }
 }

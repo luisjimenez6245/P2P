@@ -13,6 +13,9 @@ public class Tiempo implements Runnable, Serializable {
     public void setTiempo() {
         this.t = 30;
     }
+    public void setTiempo(int t) {
+        this.t = t;
+    }
 
     public int getTiempo() {
         return this.t;

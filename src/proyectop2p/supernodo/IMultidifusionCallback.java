@@ -15,15 +15,9 @@ public interface IMultidifusionCallback {
 
     public void addSuperNode(Id superNode);
 
-    public void addNode(Id node);
-
     public void cleanSuperNodes();
 
     public void cleanNodes();
-
-    public boolean canConnectNode();
-
-    public boolean checkIfNodeExists(String id);
 
     public boolean checkIfSuperNodeExists(String id);
 

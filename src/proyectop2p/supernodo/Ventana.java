@@ -2,11 +2,14 @@ package proyectop2p.supernodo;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.DefaultListModel;
+import proyectop2p.common.Archivo;
 import proyectop2p.common.Id;
 
 public class Ventana extends javax.swing.JFrame {
@@ -21,19 +24,20 @@ public class Ventana extends javax.swing.JFrame {
         setVisible(true);
         setTitle("Super-nodo " + nodo.ip + ":" + nodo.port);
         initComponents();
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
+        Thread t = new Thread(() -> {
+            while (true) {
 
-                    actualizar(activosListaSN, nodo.mapSuperNodes);
-                    actualizar(activosListaN, nodo.mapNodes);
-                    
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                actualizar(activosListaSN, nodo.mapSuperNodes);
+                actualizar(activosListaN, nodo.mapNodes);
+                Map<String, List<Archivo>> lista = new HashMap<>();
+                lista.putAll(nodo.mapArchivosNodos);
+                lista.putAll(nodo.mapArchivosSupernodos);
+                actualizarArchivos(archivos, lista, false);
+
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
@@ -62,7 +66,7 @@ public class Ventana extends javax.swing.JFrame {
         jScrollPane15 = new javax.swing.JScrollPane();
         activosListaSN = new javax.swing.JList<>();
         activosListaN = new javax.swing.JList<>();
-        Archivos = new javax.swing.JList<>();
+        archivos = new javax.swing.JList<>();
         jLabel1 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
@@ -70,13 +74,13 @@ public class Ventana extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(0, 0, 0));
         setResizable(false);
-        setSize(new java.awt.Dimension(730, 350));
+        setSize(new java.awt.Dimension(930, 350));
 
         getContentPane().setLayout(null);
 
         jScrollPane1.setViewportView(activosListaSN);
         jScrollPane13.setViewportView(activosListaN);
-        jScrollPane15.setViewportView(Archivos);
+        jScrollPane15.setViewportView(archivos);
 
         jLabel1.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         jLabel1.setText("Super Nodos");
@@ -113,12 +117,12 @@ public class Ventana extends javax.swing.JFrame {
 
         jScrollPane15.setAutoscrolls(true);
         getContentPane().add(jScrollPane15);
-        jScrollPane15.setBounds(498, 80, 200, 200);
+        jScrollPane15.setBounds(498, 80, 400, 200);
 
-        Archivos.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        Archivos.setFont(new java.awt.Font("Franklin Gothic Medium", 2, 12)); // NOI18N
-        Archivos.setForeground(new java.awt.Color(0, 102, 102));
-        jScrollPane15.setViewportView(Archivos);
+        archivos.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        archivos.setFont(new java.awt.Font("Franklin Gothic Medium", 2, 12)); // NOI18N
+        archivos.setForeground(new java.awt.Color(0, 102, 102));
+        jScrollPane15.setViewportView(archivos);
 
     }// </editor-fold>//GEN-END:initComponents
 
@@ -132,10 +136,22 @@ public class Ventana extends javax.swing.JFrame {
         lista.setModel(modelo);
     }
 
+    public void actualizarArchivos(javax.swing.JList lista, Map<String, List<Archivo>> elementos,  boolean clean) {
+        DefaultListModel modelo = new DefaultListModel();
+        lista.removeAll();
+        elementos.forEach((key, items) -> {
+            String helper = key + " archivo: ";
+            items.forEach((t) -> {
+                modelo.addElement(helper + t.name + " md5: " + t.md5);
+            });
+        });
+        lista.setModel(modelo);
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JList<String> activosListaSN;
     public javax.swing.JList<String> activosListaN;
-    public javax.swing.JList<String> Archivos;
+    public javax.swing.JList<String> archivos;
     public javax.swing.JLabel jLabel1;
     public javax.swing.JLabel jLabel3;
     public javax.swing.JLabel jLabel5;

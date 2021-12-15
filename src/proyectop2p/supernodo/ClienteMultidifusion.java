@@ -8,7 +8,6 @@ import java.nio.channels.SelectionKey;
 import java.util.Iterator;
 import proyectop2p.common.Id;
 
-import proyectop2p.common.Tiempo;
 import proyectop2p.common.multidifusion.ICliente;
 
 public class ClienteMultidifusion extends ICliente {
@@ -27,23 +26,10 @@ public class ClienteMultidifusion extends ICliente {
     }
 
     private void addNode(String host, int port_helper) {
-        String url = host + ":" + port_helper;
-        if (!url.equals(this.host + ":" + this.port)) {
-            if (!callback.checkIfNodeExists(url)) {
-                if (callback.canConnectNode()) {
-                    Id ch = new Id();
-                    ch.id = url;
-                    ch.host = host;
-                    ch.port = port_helper;
-                    ch.isSuperNode = false;
-                   
-                    callback.addNode(ch);
-                }
-            } else {
-                callback.addTimeNode(url);
-            }
-        } else {
-            System.out.println("soy el mismo????");
+        Id ch = new Id(host, port_helper);
+        System.err.println("add node");
+        if (!ch.id.equals(this.host + ":" + this.port)) {
+            callback.addTimeNode(ch.id);
         }
     }
 
@@ -56,7 +42,7 @@ public class ClienteMultidifusion extends ICliente {
                 ch.id = url;
                 ch.port = port_helper;
                 ch.isSuperNode = true;
-               
+
                 callback.addSuperNode(ch);
             } else {
                 callback.addTimeSuperNode(url);
@@ -72,6 +58,7 @@ public class ClienteMultidifusion extends ICliente {
 
     private void cleanNodes() {
         callback.cleanNodes();
+
     }
 
     @Override
@@ -97,6 +84,7 @@ public class ClienteMultidifusion extends ICliente {
                 String opc = datos[1].trim();
                 int port_helper = d.getPort();
                 String hostName = d.getHostString();
+                System.out.println(host + ":" + port_helper);
                 if (opc.contains("S")) {
                     addSuperNode(hostName, port_helper);
                 } else {
@@ -104,6 +92,7 @@ public class ClienteMultidifusion extends ICliente {
                 }
 
             }
+            
         }
         cleanSuperNodes();
         cleanNodes();

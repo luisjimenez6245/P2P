@@ -17,6 +17,13 @@ public class Id implements Serializable {
         tiempo = new Tiempo();
     }
 
+    public Id(String host, int port) {
+        tiempo = new Tiempo();
+        id = host + ":" + port;
+        this.host = host;
+        this.port = port;
+    }
+
     public String id;
     public String host;
     public int port;

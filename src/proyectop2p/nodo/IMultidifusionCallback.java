@@ -6,4 +6,6 @@ public interface IMultidifusionCallback {
     
     public boolean connect(String host, int port);
     
+    public void updateSelected();
+    
 }

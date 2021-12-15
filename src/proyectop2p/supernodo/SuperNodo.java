@@ -39,6 +39,7 @@ public class SuperNodo {
     public SuperNodo(String networkInterfaceName, String ip, int port) {
         clienteMultidifusion = new ClienteMultidifusion(ip, port, networkInterfaceName, createMultidifusionCallback());
         servidorMultidifusion = new ServidorMultidifusion(port, networkInterfaceName);
+
         mapNodes = new HashMap<>();
         mapSuperNodes = new HashMap<>();
         mapClientRMI = new HashMap<>();
@@ -80,19 +81,27 @@ public class SuperNodo {
         }
     }
 
-    private void deleteSuperNode(String id, Id item) {
-        System.err.println("port matar: " + id);
-        if (mapSuperNodes.containsKey(id)) {
-            mapSuperNodes.remove(id);
-            System.err.println("se murio el servidor " + id);
-
+    private void deleteSuperNode(String idNode, Id item) {
+        System.err.println("port matar: " + idNode);
+        if (mapSuperNodes.containsKey(idNode)) {
+            mapSuperNodes.remove(idNode);
+            System.err.println("se murio el servidor " + idNode);
+        }
+        if (mapArchivosNodos.containsKey(idNode)) {
+            mapArchivosSupernodos.remove(idNode);
+        }
+        if (mapClientRMI.containsKey(idNode)) {
+            mapClientRMI.remove(idNode);
         }
 
     }
 
-    private void deleteNode(String idNode, Id item) {
+    public void deleteNode(String idNode, Id item) {
         if (mapNodes.containsKey(idNode)) {
             mapNodes.remove(idNode);
+        }
+        if (mapArchivosNodos.containsKey(idNode)) {
+            mapArchivosNodos.remove(idNode);
         }
 
     }
@@ -102,35 +111,59 @@ public class SuperNodo {
             if (supernode.isSuperNode) {
                 if (!mapSuperNodes.containsKey(idNode)) {
                     mapSuperNodes.put(idNode, supernode);
-                }
-                Thread h = new Thread(supernode.tiempo);
-                h.start();
-                System.out.println("intentando rmi");
-                ClienteRMI clienteRMI = new ClienteRMI(
-                        supernode.host,
-                        supernode.port,
-                        id
-                );
-               
-                mapClientRMI.put(idNode, clienteRMI);
-                System.out.println("super nodo conectado por rmi");
-                Thread t = new Thread(() -> {
-                    while (clienteRMI.connect()) {
-                        mapArchivosSupernodos.put(idNode, clienteRMI.updateFiles());
-                        try {
-                            Thread.sleep(60000);
-                        } catch (InterruptedException ex) {
-                            Logger.getLogger(SuperNodo.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    }
-                });
-                t.start();
-                return true;
+                    Thread h = new Thread(supernode.tiempo);
+                    h.start();
+                    System.out.println("intentando rmi");
+                    ClienteRMI clienteRMI = new ClienteRMI(
+                            supernode.host,
+                            supernode.port,
+                            id
+                    );
 
+                    mapClientRMI.put(idNode, clienteRMI);
+                    System.out.println("super nodo conectado por rmi");
+                    if (clienteRMI.connect()) {
+                        mapArchivosSupernodos.put(idNode, clienteRMI.updateFiles());
+                    }
+                    Thread t = new Thread(() -> {
+                        while (clienteRMI.connect()) {
+                            System.out.println("cree cliente para rmi hilo");
+                            if (mapArchivosSupernodos.containsKey(idNode)) {
+                                mapArchivosSupernodos.put(idNode, clienteRMI.updateFiles());
+                            }
+                            try {
+                                Thread.sleep(60000);
+                            } catch (InterruptedException ex) {
+                                Logger.getLogger(SuperNodo.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }
+                    });
+                    t.start();
+                    return true;
+                }
             }
         }
         return false;
 
+    }
+
+    private boolean addNode(String nodeId, Id node) {
+        if (!mapNodes.containsKey(nodeId)) {
+            if (!node.isSuperNode) {
+                node.tiempo.setTiempo(65);
+                Thread t = new Thread(node.tiempo);
+                t.start();
+                if (!mapNodes.containsKey(nodeId)) {
+                    mapNodes.put(nodeId, node);
+                    return true;
+                }
+            }
+        } else {
+            node = mapNodes.get(nodeId);
+            node.tiempo.setTiempo(65);
+
+        }
+        return false;
     }
 
     private ISupernodeCallback createISupernodeCallback() {
@@ -142,7 +175,7 @@ public class SuperNodo {
 
             @Override
             public boolean connectNode(Id idNode) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                return addNode(idNode.id, idNode);
             }
 
             @Override
@@ -156,7 +189,11 @@ public class SuperNodo {
 
             @Override
             public void updateSharedFiles(Id idNode, List<Archivo> archivos) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                if (idNode.isSuperNode) {
+                    mapArchivosSupernodos.put(idNode.id, archivos);
+                } else {
+                    mapArchivosNodos.put(idNode.id, archivos);
+                }
             }
         };
     }
@@ -166,17 +203,6 @@ public class SuperNodo {
             @Override
             public void addSuperNode(Id superNode) {
                 addSupernode(superNode.id, superNode);
-            }
-
-            @Override
-            public void addNode(Id node) {
-                System.err.println("connectado nodo con:" + node.id);
-                mapNodes.put(node.id, node);
-            }
-
-            @Override
-            public boolean checkIfNodeExists(String idNode) {
-                return mapNodes.containsKey(idNode);
             }
 
             @Override
@@ -200,21 +226,6 @@ public class SuperNodo {
             }
 
             @Override
-            public void cleanNodes() {
-                Map<String, Id> helper = new HashMap<>();
-                mapNodes.forEach((key, item) -> {
-                    if (item.tiempo.getTiempo() <= 0) {
-                        helper.put(key, item);
-                    }
-                });
-                helper.forEach((key, item) -> {
-                    if (item.tiempo.getTiempo() <= 0) {
-                        deleteNode(key, item);
-                    }
-                });
-            }
-
-            @Override
             public void addTimeSuperNode(String idNode) {
                 if (mapSuperNodes.containsKey(idNode)) {
                     System.out.println("agrendo timepo a super" + idNode);
@@ -224,17 +235,28 @@ public class SuperNodo {
             }
 
             @Override
-            public void addTimeNode(String idNode) {
-                if (mapNodes.containsKey(idNode)) {
-                    Id item = mapNodes.get(idNode);
+            public void cleanNodes() {
+                Map<String, Id> helper = new HashMap<>();
+                mapNodes.forEach((key, item) -> {
+                    if (item.tiempo.getTiempo() <= 1) {
+                        helper.put(key, item);
+                    }
+                });
+                helper.forEach((key, item) -> {
+                    if (item.tiempo.getTiempo() <= 1) {
+                        deleteNode(key, item);
+                    }
+                });
+            }
+
+            @Override
+            public void addTimeNode(String id) {
+                if (mapNodes.containsKey(id)) {
+                    Id item = mapNodes.get(id);
                     item.tiempo.setTiempo();
                 }
             }
 
-            @Override
-            public boolean canConnectNode() {
-                return 2 > mapNodes.size();
-            }
         };
     }
 

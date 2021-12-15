@@ -63,7 +63,7 @@ public abstract class IServidor implements Runnable {
         channel.socket().bind(address);
 
         selector = Selector.open();
-        channel.register(selector, SelectionKey.OP_WRITE);
+        channel.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
     }
 
     protected void defaultAction(String type) throws InterruptedException, IOException {

@@ -3,9 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package proyectop2p.supernodo;
-
-import proyectop2p.common.Id;
+package proyectop2p.nodo;
 
 /**
  *
@@ -13,5 +11,6 @@ import proyectop2p.common.Id;
  */
 public interface IVentanaCallback {
 
+    public void setMessage(String message);
 
 }

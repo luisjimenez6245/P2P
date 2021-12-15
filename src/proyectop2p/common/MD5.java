@@ -10,16 +10,10 @@ import java.util.logging.Logger;
 
 public class MD5 {
 
-    private File f;
-
-    public MD5(File f) {
-        this.f = f;
-    }
-
-    public String obtenerMD5() {
+    public static String obtenerMD5(String fileName) {
         MessageDigest mdigest;
         String md5 = "";
-
+        File f = new File(fileName);
         try {
             mdigest = MessageDigest.getInstance("MD5");
             md5 = checksum(mdigest, f);
@@ -52,5 +46,5 @@ public class MD5 {
 
         return sb.toString();
     }
-    
+
 }

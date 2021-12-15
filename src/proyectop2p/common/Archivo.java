@@ -11,17 +11,8 @@ import java.io.Serializable;
  *
  * @author luis
  */
-public class Id implements Serializable {
-
-    public Id() {
-        tiempo = new Tiempo();
-    }
-
-    public String id;
-    public String host;
-    public int port;
-    public boolean isSuperNode;
-    public Tiempo tiempo;
-    public boolean isBlocked;
-
+public class Archivo implements Serializable{
+    
+    public String name;
+    public String md5;
 }

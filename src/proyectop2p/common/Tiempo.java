@@ -1,6 +1,8 @@
 package proyectop2p.common;
 
-public class Tiempo implements Runnable {
+import java.io.Serializable;
+
+public class Tiempo implements Runnable, Serializable {
 
     private int t;
 

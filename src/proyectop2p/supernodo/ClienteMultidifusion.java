@@ -36,9 +36,7 @@ public class ClienteMultidifusion extends ICliente {
                     ch.host = host;
                     ch.port = port_helper;
                     ch.isSuperNode = false;
-                    ch.tiempo = new Tiempo();
-                    Thread h = new Thread(ch.tiempo);
-                    h.start();
+                   
                     callback.addNode(ch);
                 }
             } else {
@@ -58,9 +56,7 @@ public class ClienteMultidifusion extends ICliente {
                 ch.id = url;
                 ch.port = port_helper;
                 ch.isSuperNode = true;
-                ch.tiempo = new Tiempo();
-                Thread h = new Thread(ch.tiempo);
-                h.start();
+               
                 callback.addSuperNode(ch);
             } else {
                 callback.addTimeSuperNode(url);
@@ -81,13 +77,10 @@ public class ClienteMultidifusion extends ICliente {
     @Override
     protected void action() throws Exception {
         selector.select();
-        System.out.println("entre a ciclo");
         Iterator<SelectionKey> it = selector.selectedKeys().iterator();
         ByteBuffer b = ByteBuffer.allocate(6);
         byte[] bytes;
         while (it.hasNext()) {
-            System.out.println("entre a ciclo 2");
-
             SelectionKey k = it.next();
             it.remove();
             if (k.isReadable()) {
@@ -114,7 +107,7 @@ public class ClienteMultidifusion extends ICliente {
         }
         cleanSuperNodes();
         cleanNodes();
-        Thread.sleep(5000);
+        Thread.sleep(1000);
     }
 
 }

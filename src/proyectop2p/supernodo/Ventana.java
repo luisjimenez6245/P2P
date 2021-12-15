@@ -27,6 +27,8 @@ public class Ventana extends javax.swing.JFrame {
                 while (true) {
 
                     actualizar(activosListaSN, nodo.mapSuperNodes);
+                    actualizar(activosListaN, nodo.mapNodes);
+                    
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException ex) {
@@ -124,7 +126,7 @@ public class Ventana extends javax.swing.JFrame {
         DefaultListModel modelo = new DefaultListModel();
         lista.removeAll();
         elementos.forEach((key, item) -> {
-            String helper =  key + " tiempo: " + item.tiempo.getTiempo();
+            String helper = key + " tiempo: " + item.tiempo.getTiempo();
             modelo.addElement(helper);
         });
         lista.setModel(modelo);

@@ -1,21 +1,49 @@
 package proyectop2p.supernodo;
 
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.DefaultListModel;
-import javax.swing.JLabel;
+import proyectop2p.common.Id;
 
 public class Ventana extends javax.swing.JFrame {
 
     public SuperNodo nodo;
 
     public Ventana(SuperNodo nodo) {
-        initComponents();
         this.nodo = nodo;
-        this.setVisible(true);
-        this.setTitle("Super-nodo " + nodo.ip + ":" + nodo.port);
+    }
+
+    public void init() {
+        setVisible(true);
+        setTitle("Super-nodo " + nodo.ip + ":" + nodo.port);
+        initComponents();
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+
+                    actualizar(activosListaSN, nodo.mapSuperNodes);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+        });
+        t.start();
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                nodo.stop();
+                t.interrupt();
+                System.exit(0);
+            }
+        });
     }
 
     /**
@@ -28,40 +56,24 @@ public class Ventana extends javax.swing.JFrame {
     // Code">//GEN-BEGIN:initComponents
     private void initComponents() {
         jScrollPane1 = new javax.swing.JScrollPane();
-        jScrollPane12 = new javax.swing.JScrollPane();
         jScrollPane13 = new javax.swing.JScrollPane();
-        jScrollPane14 = new javax.swing.JScrollPane();
         jScrollPane15 = new javax.swing.JScrollPane();
-        ActivosListaSN = new javax.swing.JList<>();
-        TiempoSN = new javax.swing.JList<>();
-        ActivosListaN = new javax.swing.JList<>();
+        activosListaSN = new javax.swing.JList<>();
+        activosListaN = new javax.swing.JList<>();
         Archivos = new javax.swing.JList<>();
-        TiempoN = new javax.swing.JList<>();
         jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(0, 0, 0));
         setResizable(false);
-        setSize(new java.awt.Dimension(650, 350));
-        addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosing(java.awt.event.WindowEvent evt) {
-                formWindowClosing(evt);
-            }
+        setSize(new java.awt.Dimension(730, 350));
 
-            private void formWindowClosing(WindowEvent evt) {
-                System.exit(0);
-            }
-        });
         getContentPane().setLayout(null);
 
-        jScrollPane1.setViewportView(ActivosListaSN);
-        jScrollPane12.setViewportView(TiempoSN);
-        jScrollPane13.setViewportView(ActivosListaSN);
-        jScrollPane14.setViewportView(TiempoN);
+        jScrollPane1.setViewportView(activosListaSN);
+        jScrollPane13.setViewportView(activosListaN);
         jScrollPane15.setViewportView(Archivos);
 
         jLabel1.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
@@ -71,26 +83,12 @@ public class Ventana extends javax.swing.JFrame {
 
         jScrollPane1.setAutoscrolls(true);
         getContentPane().add(jScrollPane1);
-        jScrollPane1.setBounds(18, 80, 100, 200);
+        jScrollPane1.setBounds(18, 80, 220, 200);
 
-        ActivosListaSN.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        ActivosListaSN.setFont(new java.awt.Font("Franklin Gothic Medium", 2, 12)); // NOI18N
-        ActivosListaSN.setForeground(new java.awt.Color(0, 102, 102));
-        jScrollPane1.setViewportView(ActivosListaSN);
-
-        jLabel2.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
-        jLabel2.setText("Tiempo");
-        getContentPane().add(jLabel2);
-        jLabel2.setBounds(156, 40, 100, 50);
-
-        jScrollPane12.setAutoscrolls(true);
-        getContentPane().add(jScrollPane12);
-        jScrollPane12.setBounds(138, 80, 100, 200);
-
-        TiempoSN.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        TiempoSN.setFont(new java.awt.Font("Franklin Gothic Medium", 2, 12)); // NOI18N
-        TiempoSN.setForeground(new java.awt.Color(0, 102, 102));
-        jScrollPane12.setViewportView(TiempoSN);
+        activosListaSN.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        activosListaSN.setFont(new java.awt.Font("Franklin Gothic Medium", 2, 12)); // NOI18N
+        activosListaSN.setForeground(new java.awt.Color(0, 102, 102));
+        jScrollPane1.setViewportView(activosListaSN);
 
         jLabel3.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         jLabel3.setText("Nodos");
@@ -99,26 +97,12 @@ public class Ventana extends javax.swing.JFrame {
 
         jScrollPane13.setAutoscrolls(true);
         getContentPane().add(jScrollPane13);
-        jScrollPane13.setBounds(258, 80, 100, 200);
+        jScrollPane13.setBounds(258, 80, 220, 200);
 
-        ActivosListaN.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        ActivosListaN.setFont(new java.awt.Font("Franklin Gothic Medium", 2, 12)); // NOI18N
-        ActivosListaN.setForeground(new java.awt.Color(0, 102, 102));
-        jScrollPane13.setViewportView(ActivosListaN);
-
-        jLabel4.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
-        jLabel4.setText("Tiempo");
-        getContentPane().add(jLabel4);
-        jLabel4.setBounds(396, 40, 100, 50);
-
-        jScrollPane14.setAutoscrolls(true);
-        getContentPane().add(jScrollPane14);
-        jScrollPane14.setBounds(378, 80, 100, 200);
-
-        TiempoN.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        TiempoN.setFont(new java.awt.Font("Franklin Gothic Medium", 2, 12)); // NOI18N
-        TiempoN.setForeground(new java.awt.Color(0, 102, 102));
-        jScrollPane14.setViewportView(TiempoN);
+        activosListaN.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        activosListaN.setFont(new java.awt.Font("Franklin Gothic Medium", 2, 12)); // NOI18N
+        activosListaN.setForeground(new java.awt.Color(0, 102, 102));
+        jScrollPane13.setViewportView(activosListaN);
 
         jLabel5.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         jLabel5.setText("Archivos");
@@ -127,92 +111,34 @@ public class Ventana extends javax.swing.JFrame {
 
         jScrollPane15.setAutoscrolls(true);
         getContentPane().add(jScrollPane15);
-        jScrollPane15.setBounds(498, 80, 100, 200);
+        jScrollPane15.setBounds(498, 80, 200, 200);
 
         Archivos.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         Archivos.setFont(new java.awt.Font("Franklin Gothic Medium", 2, 12)); // NOI18N
         Archivos.setForeground(new java.awt.Color(0, 102, 102));
         jScrollPane15.setViewportView(Archivos);
 
-        ActualizaVentana act = new ActualizaVentana();
-        new Thread(act).start();
     }// </editor-fold>//GEN-END:initComponents
 
-    class ActualizaVentana implements Runnable {
-
-        List<String> fileNames;
-
-        public ActualizaVentana() {
-            fileNames = new ArrayList<>();
-        }
-
-        public void action() {
-            List<String> elementos;
-            try {
-                /*
-                 elementos = nodo.ClienteMulticast.getListaConectadosSN();
-                actualizar(ActivosListaSN, elementos);
-
-                elementos = nodo.ClienteMulticast.getListaTiemposSN();
-                actualizar(TiempoSN, elementos);
-
-                elementos = nodo.ClienteMulticast.getListaConectadosN();
-                actualizar(ActivosListaN, elementos);
-
-                elementos = nodo.ClienteMulticast.getListaTiemposN();
-                actualizar(TiempoN, elementos);
-
-                int tam = nodo.ServidorRMI.getNombre().size();
-                this.Archivos.clear();
-
-                for (int i = 0; i < tam; i++) {
-                    Archivos.add("Nombre: " + nodo.ServidorRMI.getNombre().get(i)
-                            + " Ubicacion: " + nodo.ServidorRMI.getListaUbicaciones().get(i)
-                            + " MD5: " + nodo.ServidorRMI.getListaMD5().get(i));
-                }
-
-                actualizar(Archivos, this.fileNames);*/
-                Thread.sleep(5000);
-
-            } catch (Exception ex) {
-
-            }
-        }
-
-        @Override
-        public void run() {
-            while (true) {
-                action();
-            }
-        }
-
-    }
-
-    public void actualizar(javax.swing.JList lista, List<String> elementos) {
+    public void actualizar(javax.swing.JList lista, Map<String, Id> elementos) {
         DefaultListModel modelo = new DefaultListModel();
         lista.removeAll();
-
-        elementos.forEach(u -> {
-            modelo.addElement(u);
+        elementos.forEach((key, item) -> {
+            String helper =  key + " tiempo: " + item.tiempo.getTiempo();
+            modelo.addElement(helper);
         });
         lista.setModel(modelo);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    public javax.swing.JList<String> ActivosListaSN;
-    public javax.swing.JList<String> TiempoSN;
-    public javax.swing.JList<String> ActivosListaN;
-    public javax.swing.JList<String> TiempoN;
+    public javax.swing.JList<String> activosListaSN;
+    public javax.swing.JList<String> activosListaN;
     public javax.swing.JList<String> Archivos;
     public javax.swing.JLabel jLabel1;
-    public javax.swing.JLabel jLabel2;
     public javax.swing.JLabel jLabel3;
-    public javax.swing.JLabel jLabel4;
     public javax.swing.JLabel jLabel5;
     public javax.swing.JScrollPane jScrollPane1;
-    public javax.swing.JScrollPane jScrollPane12;
     public javax.swing.JScrollPane jScrollPane13;
-    public javax.swing.JScrollPane jScrollPane14;
     public javax.swing.JScrollPane jScrollPane15;
     // End of variables declaration//GEN-END:variables
 

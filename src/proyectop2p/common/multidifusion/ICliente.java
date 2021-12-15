@@ -32,19 +32,20 @@ public abstract class ICliente implements Runnable {
     protected SocketAddress remote;
     protected Selector selector;
     protected NetworkInterface networkInterface;
+    protected String host;
+    private boolean shouldContinue;
 
-
-    protected ICliente(int port, String networkInterfaceName, String multicastAddr) {
+    protected ICliente(String host, int port, String networkInterfaceName, String multicastAddr) {
+        this.host = host;
         this.port = port;
         this.networkInterfaceName = networkInterfaceName;
         this.multicastAddr = multicastAddr;
-
+        shouldContinue = true;
     }
 
     private void initialize() throws IOException {
-        remote = new InetSocketAddress(multicastAddr, port);
         networkInterface = NetworkInterface.getByName(networkInterfaceName);
-        address = new InetSocketAddress(port);
+        address = new InetSocketAddress(9000);
         channel = DatagramChannel.open(StandardProtocolFamily.INET);
         channel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
         channel.setOption(StandardSocketOptions.IP_MULTICAST_IF, networkInterface);
@@ -52,14 +53,19 @@ public abstract class ICliente implements Runnable {
         channel.join(group, networkInterface);
         channel.configureBlocking(false);
         channel.socket().bind(address);
-        Selector sel = Selector.open();
-        channel.register(sel, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+        selector = Selector.open();
+        channel.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
 
+    }
+
+    public void stop() {
+        shouldContinue = false;
+        System.out.println("parando cliente multidifusion");
     }
 
     protected abstract void action() throws Exception;
 
-    private void call(){
+    private void call() {
         try {
             action();
         } catch (Exception ex) {
@@ -71,7 +77,7 @@ public abstract class ICliente implements Runnable {
     public void run() {
         try {
             initialize();
-            while (true) {
+            while (shouldContinue) {
                 call();
             }
         } catch (IOException ex) {

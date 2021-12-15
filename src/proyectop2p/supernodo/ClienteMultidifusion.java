@@ -16,48 +16,56 @@ public class ClienteMultidifusion extends ICliente {
     private final IMultidifusionCallback callback;
 
     protected ClienteMultidifusion(
+            String host,
             int port,
             String networkInterfaceName,
             IMultidifusionCallback callback
     ) {
-        super(port, networkInterfaceName, "228.1.1.10");
+        super(host, port, networkInterfaceName, "228.1.1.10");
         this.callback = callback;
 
     }
 
     private void addNode(String host, int port_helper) {
         String url = host + ":" + port_helper;
-        if (!callback.checkIfNodeExists(url)) {
-            if (callback.canConnectNode()) {
-                Id ch = new Id();
-                ch.id = url;
-                ch.host = host;
-                ch.port = port_helper;
-                ch.isSuperNode = false;
-                ch.tiempo = new Tiempo();
-                Thread h = new Thread(ch.tiempo);
-                h.start();
-                callback.addNode(ch);
+        if (!url.equals(this.host + ":" + this.port)) {
+            if (!callback.checkIfNodeExists(url)) {
+                if (callback.canConnectNode()) {
+                    Id ch = new Id();
+                    ch.id = url;
+                    ch.host = host;
+                    ch.port = port_helper;
+                    ch.isSuperNode = false;
+                    ch.tiempo = new Tiempo();
+                    Thread h = new Thread(ch.tiempo);
+                    h.start();
+                    callback.addNode(ch);
+                }
+            } else {
+                callback.addTimeNode(url);
             }
         } else {
-            callback.addTimeNode(url);
+            System.out.println("soy el mismo????");
         }
     }
 
     private void addSuperNode(String host, int port_helper) {
         String url = host + ":" + port_helper;
-        if (!callback.checkIfSuperNodeExists(url)) {
-            Id ch = new Id();
-            ch.host = host;
-            ch.id = url;
-            ch.port = port_helper;
-            ch.isSuperNode = true;
-            ch.tiempo = new Tiempo();
-            Thread h = new Thread(ch.tiempo);
-            h.start();
-            callback.addSuperNode(ch);
+        if (!url.equals(this.host + ":" + this.port)) {
+            if (!callback.checkIfSuperNodeExists(url)) {
+                Id ch = new Id();
+                ch.host = host;
+                ch.id = url;
+                ch.port = port_helper;
+                ch.isSuperNode = true;
+                ch.tiempo = new Tiempo();
+                Thread h = new Thread(ch.tiempo);
+                h.start();
+                callback.addSuperNode(ch);
+            } else {
+                callback.addTimeSuperNode(url);
+            }
         } else {
-            callback.addTimeSuperNode(url);
         }
 
     }
@@ -73,31 +81,33 @@ public class ClienteMultidifusion extends ICliente {
     @Override
     protected void action() throws Exception {
         selector.select();
+        System.out.println("entre a ciclo");
         Iterator<SelectionKey> it = selector.selectedKeys().iterator();
-        ByteBuffer b = ByteBuffer.allocate(100);
+        ByteBuffer b = ByteBuffer.allocate(6);
         byte[] bytes;
         while (it.hasNext()) {
+            System.out.println("entre a ciclo 2");
+
             SelectionKey k = it.next();
             it.remove();
             if (k.isReadable()) {
                 DatagramChannel ch = (DatagramChannel) k.channel();
-
+                b.clear();
                 SocketAddress emisor = ch.receive(b);
                 InetSocketAddress d = (InetSocketAddress) emisor;
                 b.clear();
                 bytes = new byte[b.limit()];
                 b.get(bytes, 0, b.limit());
                 b.flip();
-
-                String[] datos = new String(bytes).split(" ");
-                int port_helper = Integer.parseInt(datos[0].trim());
+                String contenido = new String(bytes);
+                String[] datos = contenido.split(" ");
                 String opc = datos[1].trim();
-                String host = d.getHostString();
-
+                int port_helper = d.getPort();
+                String hostName = d.getHostString();
                 if (opc.contains("S")) {
-                    addSuperNode(host, port_helper);
+                    addSuperNode(hostName, port_helper);
                 } else {
-                    addNode(host, port_helper);
+                    addNode(hostName, port_helper);
                 }
 
             }

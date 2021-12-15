@@ -15,24 +15,27 @@ public class ClienteMultidifusion extends ICliente {
 
     private final IMultidifusionCallback callback;
     private final List<String> blackList;
+    public boolean connected = false;
 
     protected ClienteMultidifusion(
+            String host,
             int port,
             String networkInterfaceName,
             IMultidifusionCallback callback
     ) {
-        super(port, networkInterfaceName, "228.1.1.10");
+        super(host, port, networkInterfaceName, "228.1.1.10");
         this.callback = callback;
+        remote = new InetSocketAddress("228.1.1.10", port);
         blackList = new ArrayList<>();
     }
 
     private void isSuperNodo(String host, int port) {
         String url = host + port;
         if (!blackList.contains(url)) {
-            callback.setMessage("Intendando conexion con: " + host + "<br>");
+            callback.setMessage("Intendando conexion con: " + url + "<br>");
             if (callback.connect(host, port)) {
-                callback.setMessage("<span style=\"color:green\"> Conectado con " + host + "</span><br>");
-                
+                callback.setMessage("<span style=\"color:green\"> Conectado con " + url + "</span><br>");
+
             } else {
                 blackList.add(url);
             }
@@ -73,6 +76,7 @@ public class ClienteMultidifusion extends ICliente {
                         String helperMessage = puerto + " N";
                         b.put(helperMessage.getBytes());
                         b.flip();
+                        connected = true;
                         chWritable.send(b, remote);
                     }
                 }
@@ -80,6 +84,9 @@ public class ClienteMultidifusion extends ICliente {
             }
 
             Thread.sleep(5000);
+        }
+        if (!connected) {
+            callback.setMessage("no hay ningun  supernodo al cual conectarse");
         }
     }
 

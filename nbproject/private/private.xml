@@ -3,19 +3,28 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/Users/luis/git/P2P/src/proyectop2p/ServidorRMI.java</file>
-            <file>file:/Users/luis/git/P2P/src/proyectop2p/ClienteMultidifusionNodo.java</file>
-            <file>file:/Users/luis/git/P2P/src/proyectop2p/MainSuperNodo.java</file>
-            <file>file:/Users/luis/git/P2P/src/proyectop2p/ClienteMultidifusionSuperNodo.java</file>
-            <file>file:/Users/luis/git/P2P/src/proyectop2p/MainNodo.java</file>
-            <file>file:/Users/luis/git/P2P/src/proyectop2p/VentanaSuperNodo.java</file>
-            <file>file:/Users/luis/git/P2P/src/proyectop2p/ServidorMultidifusion.java</file>
-            <file>file:/Users/luis/git/P2P/src/proyectop2p/ClienteRMINodo.java</file>
-            <file>file:/Users/luis/git/P2P/src/proyectop2p/VentanaNodo.java</file>
-            <file>file:/Users/luis/git/P2P/src/proyectop2p/Nodo.java</file>
-            <file>file:/Users/luis/git/P2P/src/proyectop2p/SuperNodo.java</file>
-            <file>file:/Users/luis/git/P2P/src/proyectop2p/ActualizaVentana.java</file>
-            <file>file:/Users/luis/git/P2P/src/proyectop2p/ID.java</file>
+            <file>file:/Users/luis/git/P2P/src/proyectop2p/common/GetLocalAddr.java</file>
+            <file>file:/Users/luis/git/P2P/src/proyectop2p/nodo/ClienteRMI.java</file>
+            <file>file:/Users/luis/git/P2P/src/proyectop2p/common/multidifusion/IServidor.java</file>
+            <file>file:/Users/luis/git/P2P/src/proyectop2p/supernodo/IMultidifusionCallback.java</file>
+            <file>file:/Users/luis/git/P2P/src/proyectop2p/rmi/NodeServidor.java</file>
+            <file>file:/Users/luis/git/P2P/src/proyectop2p/nodo/ClienteMultidifusion.java</file>
+            <file>file:/Users/luis/git/P2P/src/proyectop2p/nodo/Main.java</file>
+            <file>file:/Users/luis/git/P2P/src/proyectop2p/nodo/IMultidifusionCallback.java</file>
+            <file>file:/Users/luis/git/P2P/src/proyectop2p/nodo/Nodo.java</file>
+            <file>file:/Users/luis/git/P2P/src/proyectop2p/supernodo/ClienteRMI.java</file>
+            <file>file:/Users/luis/git/P2P/src/proyectop2p/rmi/SupernodeServidor.java</file>
+            <file>file:/Users/luis/git/P2P/src/proyectop2p/supernodo/ClienteMultidifusion.java</file>
+            <file>file:/Users/luis/git/P2P/src/proyectop2p/supernodo/SuperNodo.java</file>
+            <file>file:/Users/luis/git/P2P/src/proyectop2p/supernodo/Ventana.java</file>
+            <file>file:/Users/luis/git/P2P/src/proyectop2p/supernodo/ServidorMultidifusion.java</file>
+            <file>file:/Users/luis/git/P2P/src/proyectop2p/rmi/Cliente.java</file>
+            <file>file:/Users/luis/git/P2P/src/proyectop2p/supernodo/IVentanaCallback.java</file>
+            <file>file:/Users/luis/git/P2P/src/proyectop2p/rmi/NodeMethods.java</file>
+            <file>file:/Users/luis/git/P2P/src/proyectop2p/common/multidifusion/ICliente.java</file>
+            <file>file:/Users/luis/git/P2P/src/proyectop2p/supernodo/Main.java</file>
+            <file>file:/Users/luis/git/P2P/src/proyectop2p/rmi/SupernodeMethods.java</file>
+            <file>file:/Users/luis/git/P2P/src/proyectop2p/nodo/Ventana.java</file>
         </group>
     </open-files>
 </project-private>

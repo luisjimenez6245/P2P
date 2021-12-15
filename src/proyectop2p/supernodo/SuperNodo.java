@@ -8,32 +8,49 @@ public class SuperNodo {
 
     public String ip;
     public int port;
-    public ClienteMultidifusion clienteMultidifusion;
-    private final Map<String, Id> mapNodes;
-    private final Map<String, Id> mapSuperNodes;
+    private final ClienteMultidifusion clienteMultidifusion;
+    private final ServidorMultidifusion servidorMultidifusion;
+    public final Map<String, Id> mapNodes;
+    public final Map<String, Id> mapSuperNodes;
+    private Thread threadServidorMultidifusion;
+    private Thread threadClienteMultidifusion;
 
-    public SuperNodo(String ip, int port) {
-        clienteMultidifusion = new ClienteMultidifusion(port, "lo", createMultidifusionCallback());
+    public SuperNodo(String networkInterfaceName, String ip, int port) {
+        clienteMultidifusion = new ClienteMultidifusion(ip, port, networkInterfaceName, createMultidifusionCallback());
+        servidorMultidifusion = new ServidorMultidifusion(port, networkInterfaceName);
         mapNodes = new HashMap<>();
         mapSuperNodes = new HashMap<>();
+        this.ip = ip;
+        this.port = port;
+        System.out.println("SuperNodo: " + ip + ":" + port);
+    }
+
+    public void stop() {
+        clienteMultidifusion.stop();
+        servidorMultidifusion.stop();
     }
 
     public void init() {
-        Thread threadServidorMultidifusion = new Thread(
-                new ServidorMultidifusion(port, "lo"));
+        threadServidorMultidifusion = new Thread(servidorMultidifusion);
         threadServidorMultidifusion.start();
-        Thread threadClienteMultidifusion = new Thread(clienteMultidifusion);
+        threadClienteMultidifusion = new Thread(clienteMultidifusion);
         threadClienteMultidifusion.start();
     }
 
     private void deleteSuperNode(String id, Id item) {
+        System.err.println("port matar: " + id);
+        if (mapSuperNodes.containsKey(id)) {
+            mapSuperNodes.remove(id);
+            System.err.println("se murio el servidor " + id);
+
+        }
 
     }
 
-    private void deleteNode(String id, Id Item) {
-        if(mapNodes.containsKey(id)){
+    private void deleteNode(String id, Id item) {
+        if (mapNodes.containsKey(id)) {
             mapNodes.remove(id);
-            
+
         }
 
     }
@@ -42,11 +59,13 @@ public class SuperNodo {
         return new IMultidifusionCallback() {
             @Override
             public void addSuperNode(Id superNode) {
+                System.err.println("connectado supernodo con:" + superNode.id);
                 mapSuperNodes.put(superNode.id, superNode);
             }
 
             @Override
             public void addNode(Id node) {
+                System.err.println("connectado nodo con:" + node.id);
                 mapSuperNodes.put(node.id, node);
             }
 
@@ -62,8 +81,14 @@ public class SuperNodo {
 
             @Override
             public void cleanSuperNodes() {
+                Map<String, Id> helper = new HashMap<>();
                 mapSuperNodes.forEach((key, item) -> {
-                    if (item.tiempo.getTiempo() <= 0) {
+                    if (item.tiempo.getTiempo() <= 1) {
+                        helper.put(key, item);
+                    }
+                });
+                helper.forEach((key, item) -> {
+                    if (item.tiempo.getTiempo() <= 1) {
                         deleteSuperNode(key, item);
                     }
                 });
@@ -71,9 +96,15 @@ public class SuperNodo {
 
             @Override
             public void cleanNodes() {
+                Map<String, Id> helper = new HashMap<>();
                 mapNodes.forEach((key, item) -> {
                     if (item.tiempo.getTiempo() <= 0) {
-                        deleteSuperNode(key, item);
+                        helper.put(key, item);
+                    }
+                });
+                helper.forEach((key, item) -> {
+                    if (item.tiempo.getTiempo() <= 0) {
+                        deleteNode(key, item);
                     }
                 });
             }
@@ -81,6 +112,7 @@ public class SuperNodo {
             @Override
             public void addTimeSuperNode(String id) {
                 if (mapSuperNodes.containsKey(id)) {
+                    System.out.println("agrendo timepo a super" + id);
                     Id item = mapSuperNodes.get(id);
                     item.tiempo.setTiempo();
                 }

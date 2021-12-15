@@ -84,57 +84,16 @@ public class Ventana extends javax.swing.JFrame {
         getContentPane().add(EnviarButton);
         EnviarButton.setBounds(300, 220, 100, 20);
 
-        ActualizaVentana act = new ActualizaVentana();
-        new Thread(act).start();
     }// </editor-fold>//GEN-END:initComponents
 
     private void EnviarButtonActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_EnviarButtonActionPerformed
         String busqueda = NombreText.getText();
 
-        int ubicacion = nodo.buscar(busqueda);
 
-        if (ubicacion == -1) {
-            escribir_texto("No se encontró el archivo");
-        } else {
-            escribir_texto("Si se encontró en " + ubicacion);
-            descargar(busqueda, ubicacion);
-        }
     }
 
     private void escribir_texto(String mensaje) {
         this.mensaje += "<br/>" + mensaje;
-    }
-
-    private void descargar(String nombre, int ubicacion) {
-
-        /*
-         * Cliente_de_flujo cliente_de_flujo = new Cliente_de_flujo(ubicacion, nombre,
-         * nodo.ObtenerDirectorio());
-         * new Thread(cliente_de_flujo).start();
-         * escribir_texto(nombre + " descargado con exito");
-         */
-    }
-
-    class ActualizaVentana implements Runnable {
-
-        private void action() {
-            try {
-                jLabel1.setText("Conectado al Super Nodo: " + nodo.getPto());
-                MensajeLabel.setText("<html>" + mensaje + "</html>");
-                Thread.sleep(5000);
-            } catch (Exception ex) {
-
-            }
-        }
-
-        @Override
-        public void run() {
-
-            while (true) {
-                action();
-            }
-        }
-
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

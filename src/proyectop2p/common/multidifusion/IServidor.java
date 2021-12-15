@@ -35,11 +35,18 @@ public abstract class IServidor implements Runnable {
     protected SocketAddress remote;
     protected Selector selector;
     protected NetworkInterface networkInterface;
+    private boolean shouldContinue;
 
     protected IServidor(int port, String networkInterfaceName, String multicastAddr) {
         this.port = port;
         this.networkInterfaceName = networkInterfaceName;
         this.multicastAddr = multicastAddr;
+        shouldContinue = true;
+    }
+
+    public void stop() {
+        shouldContinue = false;
+        System.out.println("parando servidor multidifusion");
 
     }
 
@@ -50,19 +57,19 @@ public abstract class IServidor implements Runnable {
         channel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
         channel.setOption(StandardSocketOptions.IP_MULTICAST_IF, networkInterface);
         InetAddress group = InetAddress.getByName(multicastAddr);
-        remote = new InetSocketAddress(group, port);
+        remote = new InetSocketAddress(group, 9000);
         channel.join(group, networkInterface);
         channel.configureBlocking(false);
         channel.socket().bind(address);
+
         selector = Selector.open();
         channel.register(selector, SelectionKey.OP_WRITE);
     }
 
     protected void defaultAction(String type) throws InterruptedException, IOException {
         String mensaje = port + " " + type;
-
         ByteBuffer buf = ByteBuffer.allocate(6);
-
+        selector.select();
         Iterator<SelectionKey> it = selector.selectedKeys().iterator();
         while (it.hasNext()) {
             SelectionKey key = it.next();
@@ -92,7 +99,7 @@ public abstract class IServidor implements Runnable {
     public void run() {
         try {
             initialize();
-            while (true) {
+            while (shouldContinue) {
                 call();
             }
         } catch (IOException ex) {

@@ -39,7 +39,7 @@ public class ClienteRMI {
     
     public Archivo[] searchArchivo(String name){
         try {
-            Archivo[] archivos = stub.searchFileSupernode(name);
+            Archivo[] archivos = stub.searchFileSupernode(name, id.id);
             return archivos;
         } catch (RemoteException ex) {
             Logger.getLogger(ClienteRMI.class.getName()).log(Level.SEVERE, null, ex);

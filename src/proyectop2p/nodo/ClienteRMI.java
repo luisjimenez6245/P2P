@@ -37,7 +37,7 @@ public class ClienteRMI {
 
     public Id[] requestFile(Archivo archivo) {
         try {
-            return stub.requestFile(archivo.md5);
+            return stub.requestFile(archivo.md5, id.id);
         } catch (RemoteException ex) {
             Logger.getLogger(ClienteRMI.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -47,7 +47,7 @@ public class ClienteRMI {
 
     public Archivo[] searchFile(String name) {
         try {
-            return stub.searchFile(name);
+            return stub.searchFile(name, id.id);
         } catch (RemoteException ex) {
             Logger.getLogger(ClienteRMI.class.getName()).log(Level.SEVERE, null, ex);
         }

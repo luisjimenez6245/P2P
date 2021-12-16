@@ -41,9 +41,9 @@ public class ClienteDescarga implements Runnable {
         try {
             for (int i = 0; i < ids.length; ++i) {
                 Id item = ids[i];
-                execute(item.host, item.port, fileName, i, ids.length);
+                execute(item.host, item.defaultPort, fileName, i, ids.length);
             }
-
+            
             String md5FromDownload = MD5.obtenerMD5(folder + fileName);
             callback.setMessage("md5 de descarga:" + md5FromDownload);
             callback.setMessage("md5 original:" + this.md5);
@@ -101,10 +101,10 @@ public class ClienteDescarga implements Runnable {
         byte[] b = new byte[buffer];
         callback.setMessage("El archivo pesa" + fileSize);
 
-        DataOutputStream fileWriter = new DataOutputStream(new FileOutputStream(folder + fileName));
         long bytesToSend = (long) Math.floor(fileSize / totalPeers);
         long start = bytesToSend * peerNumber;
-        long stop = (totalPeers * bytesToSend);
+        long stop = bytesToSend + start;
+
         if ((peerNumber + 1) == totalPeers && fileSize > stop) {
             stop = fileSize;
         }
@@ -112,10 +112,13 @@ public class ClienteDescarga implements Runnable {
         callback.setMessage("Recibiendo archivo stop: " + stop + "");
         long recivedBytes = start;
         int n;
+                DataOutputStream fileWriter = new DataOutputStream(new FileOutputStream(folder + fileName));
+
         while (recivedBytes < stop) {
             n = inputStream.read(b);
             fileWriter.write(b, 0, n);
             recivedBytes = recivedBytes + n;
+            System.err.println("bytes:" + n + " totales:" + (recivedBytes));
             fileWriter.flush();
         }
         callback.setMessage("Recibimos el archivo: " + fileName + " con éxito");

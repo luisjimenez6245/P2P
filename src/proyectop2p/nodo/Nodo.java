@@ -83,7 +83,14 @@ public class Nodo {
         ClienteDescarga cliente = new ClienteDescarga(ids, archivo.name, archivo.md5, folder, getDescargaCallback());
         if (cliente.downloadFromServer()) {
             ventanaCallback.setMessage("Descargado correctamente");
-            readFilesFromFolder();
+            boolean b = clienteRMI.connect();
+            if (b) {
+                try {
+                    readFilesFromFolder();
+                } catch (Exception e) {
+                    System.out.println(e);
+                }
+            }
         } else {
             ventanaCallback.setMessage("Ocurrió un error al descargar: " + archivo.toReadbleString());
         }
@@ -131,7 +138,7 @@ public class Nodo {
             f.mkdir();
         } catch (Exception ex) {
         }
-        servidorDescarga = new ServidorDescarga(port, folder, getDescargaCallback());
+        servidorDescarga = new ServidorDescarga(id.defaultPort, folder, getDescargaCallback());
         servidorDescarga.init();
         Thread t = new Thread(servidorDescarga);
         t.start();

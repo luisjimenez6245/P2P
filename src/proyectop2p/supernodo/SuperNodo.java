@@ -6,6 +6,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -82,10 +83,10 @@ public class SuperNodo {
     }
 
     private void deleteSuperNode(String idNode, Id item) {
-        System.err.println("port matar: " + idNode);
+        System.err.println("Super node matar: " + idNode);
         if (mapSuperNodes.containsKey(idNode)) {
             mapSuperNodes.remove(idNode);
-            System.err.println("se murio el servidor " + idNode);
+            System.err.println("Se murio el servidor " + idNode);
         }
         if (mapArchivosSupernodos.containsKey(idNode)) {
             mapArchivosSupernodos.remove(idNode);
@@ -103,44 +104,46 @@ public class SuperNodo {
         if (mapArchivosNodos.containsKey(idNode)) {
             mapArchivosNodos.remove(idNode);
         }
+        if (mapClientRMI.containsKey(idNode)) {
+            mapClientRMI.remove(idNode);
+        }
 
     }
 
     private boolean addSupernode(String idNode, Id supernode) {
-        if (!mapSuperNodes.containsKey(idNode)) {
-            if (supernode.isSuperNode) {
-                if (!mapSuperNodes.containsKey(idNode)) {
-                    mapSuperNodes.put(idNode, supernode);
-                    Thread h = new Thread(supernode.tiempo);
-                    h.start();
-                    System.out.println("intentando rmi");
-                    ClienteRMI clienteRMI = new ClienteRMI(
-                            supernode.host,
-                            supernode.port,
-                            id
-                    );
+        if (supernode.isSuperNode) {
+            if (!mapSuperNodes.containsKey(idNode)) {
+                mapSuperNodes.put(idNode, supernode);
+                Thread h = new Thread(supernode.tiempo);
+                h.start();
+                System.err.println("intentando rmi:" + idNode);
+                ClienteRMI clienteRMI = new ClienteRMI(
+                        supernode.host,
+                        supernode.port,
+                        id
+                );
 
-                    mapClientRMI.put(idNode, clienteRMI);
-                    System.out.println("super nodo conectado por rmi");
-                    if (clienteRMI.connect()) {
-                        mapArchivosSupernodos.put(idNode, clienteRMI.updateFiles());
-                    }
-                    Thread t = new Thread(() -> {
-                        while (clienteRMI.connect()) {
-                            System.out.println("cree cliente para rmi hilo");
-                            if (mapArchivosSupernodos.containsKey(idNode)) {
-                                mapArchivosSupernodos.put(idNode, clienteRMI.updateFiles());
-                            }
-                            try {
-                                Thread.sleep(60000);
-                            } catch (InterruptedException ex) {
-                                Logger.getLogger(SuperNodo.class.getName()).log(Level.SEVERE, null, ex);
-                            }
-                        }
-                    });
-                    t.start();
-                    return true;
+                mapClientRMI.put(idNode, clienteRMI);
+                System.err.println("super nodo conectado por rmi");
+                if (clienteRMI.connect()) {
+                    mapArchivosSupernodos.put(idNode, clienteRMI.updateFiles());
                 }
+                Thread t = new Thread(() -> {
+                    while (clienteRMI.connect()) {
+                        mapArchivosSupernodos.put(idNode, clienteRMI.updateFiles());
+                        try {
+                            Thread.sleep(60000);
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(SuperNodo.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                });
+                t.start();
+                return true;
+            } else {
+                System.out.println("agrendo timepo a super rmi:" + idNode);
+                Id item = mapSuperNodes.get(idNode);
+                item.tiempo.setTiempo();
             }
         }
         return false;
@@ -206,11 +209,24 @@ public class SuperNodo {
             public Archivo[] searchArchivo(String name) {
                 List<Archivo> archivo = new ArrayList<>();
                 mapClientRMI.forEach((t, u) -> {
-                    u.searchArchivo(name);
+                    Archivo[] items = u.searchArchivo(name);
+                    archivo.addAll(Arrays.asList(items));
                 });
                 Archivo[] result = new Archivo[archivo.size()];
                 result = archivo.toArray(result);
                 return result;
+            }
+
+            @Override
+            public List<Archivo> getAllArchivos() {
+                List<Archivo> archivos = new ArrayList<>();
+                mapArchivosNodos.forEach((t, u) -> {
+                    archivos.addAll(u);
+                });
+                mapArchivosSupernodos.forEach((t, u) -> {
+                    archivos.addAll(u);
+                });
+                return archivos;
             }
         };
     }
@@ -231,9 +247,7 @@ public class SuperNodo {
             public void cleanSuperNodes() {
                 Map<String, Id> helper = new HashMap<>();
                 mapSuperNodes.forEach((key, item) -> {
-                    if (item.tiempo.getTiempo() <= 1) {
-                        helper.put(key, item);
-                    }
+                    helper.put(key, item);
                 });
                 helper.forEach((key, item) -> {
                     if (item.tiempo.getTiempo() <= 1) {
@@ -255,9 +269,7 @@ public class SuperNodo {
             public void cleanNodes() {
                 Map<String, Id> helper = new HashMap<>();
                 mapNodes.forEach((key, item) -> {
-                    if (item.tiempo.getTiempo() <= 1) {
-                        helper.put(key, item);
-                    }
+                    helper.put(key, item);
                 });
                 helper.forEach((key, item) -> {
                     if (item.tiempo.getTiempo() <= 1) {

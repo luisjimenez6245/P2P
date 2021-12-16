@@ -50,13 +50,16 @@ public class ServidorRMI implements FuncionesRMI {
     }
 
     @Override
-    public Id[] requestFile(String md5) throws RemoteException {
-        List<Archivo> archivos = callback.getArchivos();
+    public Id[] requestFile(String md5, String requestId) throws RemoteException {
+        List<Archivo> archivos = callback.getAllArchivos();
+        List<String> checker = new ArrayList<>();
+        checker.add(requestId);
         List<Id> ids = new ArrayList<>();
         archivos.forEach((t) -> {
             if (t.md5.equals(md5)) {
-                if (!ids.contains(t.id)) {
+                if (!checker.contains(t.id.id)) {
                     ids.add(t.id);
+                    checker.add(t.id.id);
                 }
             }
         });
@@ -66,22 +69,24 @@ public class ServidorRMI implements FuncionesRMI {
     }
 
     @Override
-    public Archivo[] searchFile(String name) throws RemoteException {
-        return searchFile(name, true);
+    public Archivo[] searchFile(String name, String requestId) throws RemoteException {
+        return searchFile(name, true, requestId);
     }
 
     @Override
-    public Archivo[] searchFileSupernode(String name) throws RemoteException {
-        return searchFile(name, false);
+    public Archivo[] searchFileSupernode(String name, String requestId) throws RemoteException {
+        return searchFile(name, false, requestId);
     }
 
-    private Archivo[] searchFile(String name, boolean shouldAsk) {
-        List<Archivo> archivos = callback.getArchivos();
+    private Archivo[] searchFile(String name, boolean shouldAsk, String requestId) {
+        List<Archivo> archivos = callback.getAllArchivos();
         List<Archivo> ids = new ArrayList<>();
+        List<String> checker = new ArrayList<>();
         archivos.forEach((t) -> {
-            if (t.name.equals(name)) {
-                if (!ids.contains(t)) {
+            if (t.name.equals(name) && !t.id.id.equals(requestId)) {
+                if (!checker.contains(t.md5)) {
                     ids.add(t);
+                    checker.add(t.md5);
                 }
             }
         });

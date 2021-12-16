@@ -83,7 +83,7 @@ public class Ventana extends javax.swing.JFrame {
         getContentPane().add(jLabel1);
         jLabel1.setBounds(18, 10, 500, 50);
 
-        NombreText.setText("Nombre");
+        NombreText.setText("prueba.pdf");
 
         EnviarButton.setText("Enviar");
         EnviarButton.addActionListener(new java.awt.event.ActionListener() {

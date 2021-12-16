@@ -19,10 +19,10 @@ public interface FuncionesRMI extends Remote {
 
     public void addFiles(Id id, List<Archivo> archivos) throws RemoteException;
 
-    public Archivo[] searchFile(String name) throws RemoteException;
+    public Archivo[] searchFile(String name, String requestId) throws RemoteException;
 
-    public Archivo[] searchFileSupernode(String name) throws RemoteException;
+    public Archivo[] searchFileSupernode(String name, String requestId) throws RemoteException;
 
-    public Id[] requestFile(String name) throws RemoteException;
+    public Id[] requestFile(String name, String requestId) throws RemoteException;
 
 }

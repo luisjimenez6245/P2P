@@ -157,7 +157,7 @@ public class ClienteMultidifusion extends ICliente {
     protected void action() throws Exception {
         if (connected) {
             searchForSelectedSupernode();
-            Thread.sleep(5000);
+            Thread.sleep(1000);
             return;
         }
         if (time > 30) {

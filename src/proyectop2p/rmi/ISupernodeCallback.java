@@ -20,6 +20,8 @@ public interface ISupernodeCallback {
     boolean connectNode(Id id);
 
     List<Archivo> getArchivos();
+        List<Archivo> getAllArchivos();
+
 
     void updateSharedFiles(Id id, List<Archivo> archivos);
     

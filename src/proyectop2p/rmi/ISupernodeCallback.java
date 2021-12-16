@@ -22,5 +22,7 @@ public interface ISupernodeCallback {
     List<Archivo> getArchivos();
 
     void updateSharedFiles(Id id, List<Archivo> archivos);
+    
+    Archivo[] searchArchivo(String name);
 
 }

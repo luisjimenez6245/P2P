@@ -160,7 +160,7 @@ public class ClienteMultidifusion extends ICliente {
             Thread.sleep(5000);
             return;
         }
-        if (time > 10) {
+        if (time > 30) {
             tryToConnect();
         } else {
             searchForSupernodes();

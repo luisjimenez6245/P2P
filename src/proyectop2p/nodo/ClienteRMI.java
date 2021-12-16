@@ -23,7 +23,7 @@ public class ClienteRMI {
         this.id = id;
         this.port = port;
     }
-    
+
     public boolean connect() {
         if (stub != null || init()) {
             try {
@@ -34,9 +34,28 @@ public class ClienteRMI {
         }
         return false;
     }
-    
-    public void updateFiles(List<Archivo> archivos){
-       
+
+    public Id[] requestFile(Archivo archivo) {
+        try {
+            return stub.requestFile(archivo.md5);
+        } catch (RemoteException ex) {
+            Logger.getLogger(ClienteRMI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return new Id[0];
+    }
+
+    public Archivo[] searchFile(String name) {
+        try {
+            return stub.searchFile(name);
+        } catch (RemoteException ex) {
+            Logger.getLogger(ClienteRMI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return new Archivo[0];
+    }
+
+    public void updateFiles(List<Archivo> archivos) {
+
         try {
             stub.addFiles(id, archivos);
         } catch (RemoteException ex) {

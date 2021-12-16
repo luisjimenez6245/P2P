@@ -19,8 +19,11 @@ public class Ventana extends javax.swing.JFrame {
         return new IVentanaCallback() {
             @Override
             public void setMessage(String message) {
+                System.out.println("LOGGER VENTANA: " + message);
                 mensaje = message + "<br/>" + mensaje;
-                MensajeLabel.setText("<html>" + mensaje + "</html>");
+                if (MensajeLabel != null) {
+                    MensajeLabel.setText("<html>" + mensaje + "</html>");
+                }
             }
 
             @Override
@@ -121,11 +124,7 @@ public class Ventana extends javax.swing.JFrame {
 
     private void EnviarButtonActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_EnviarButtonActionPerformed
         String busqueda = NombreText.getText();
-
-    }
-
-    private void escribirTexto(String mensaje) {
-        this.mensaje += "<br/>" + mensaje;
+        nodo.buscar(busqueda);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

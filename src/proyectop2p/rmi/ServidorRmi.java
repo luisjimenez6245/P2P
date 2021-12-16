@@ -50,12 +50,14 @@ public class ServidorRMI implements FuncionesRMI {
     }
 
     @Override
-    public Id[] requestFile(String name) throws RemoteException {
+    public Id[] requestFile(String md5) throws RemoteException {
         List<Archivo> archivos = callback.getArchivos();
         List<Id> ids = new ArrayList<>();
         archivos.forEach((t) -> {
-            if (t.name.equals(name) || t.md5.equals(name)) {
-                ids.add(t.id);
+            if (t.md5.equals(md5)) {
+                if (!ids.contains(t.id)) {
+                    ids.add(t.id);
+                }
             }
         });
         Id[] results = new Id[ids.size()];
@@ -63,4 +65,33 @@ public class ServidorRMI implements FuncionesRMI {
         return results;
     }
 
+    @Override
+    public Archivo[] searchFile(String name) throws RemoteException {
+        return searchFile(name, true);
+    }
+
+    @Override
+    public Archivo[] searchFileSupernode(String name) throws RemoteException {
+        return searchFile(name, false);
+    }
+
+    private Archivo[] searchFile(String name, boolean shouldAsk) {
+        List<Archivo> archivos = callback.getArchivos();
+        List<Archivo> ids = new ArrayList<>();
+        archivos.forEach((t) -> {
+            if (t.name.equals(name)) {
+                if (!ids.contains(t)) {
+                    ids.add(t);
+                }
+            }
+        });
+        Archivo[] results = new Archivo[ids.size()];
+        results = ids.toArray(results);
+        if (shouldAsk) {
+            if (results.length == 0) {
+                return callback.searchArchivo(name);
+            }
+        }
+        return results;
+    }
 }

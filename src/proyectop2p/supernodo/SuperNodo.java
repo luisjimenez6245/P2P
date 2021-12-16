@@ -201,6 +201,17 @@ public class SuperNodo {
                     }
                 }
             }
+
+            @Override
+            public Archivo[] searchArchivo(String name) {
+                List<Archivo> archivo = new ArrayList<>();
+                mapClientRMI.forEach((t, u) -> {
+                    u.searchArchivo(name);
+                });
+                Archivo[] result = new Archivo[archivo.size()];
+                result = archivo.toArray(result);
+                return result;
+            }
         };
     }
 

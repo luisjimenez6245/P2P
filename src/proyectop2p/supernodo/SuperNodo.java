@@ -87,7 +87,7 @@ public class SuperNodo {
             mapSuperNodes.remove(idNode);
             System.err.println("se murio el servidor " + idNode);
         }
-        if (mapArchivosNodos.containsKey(idNode)) {
+        if (mapArchivosSupernodos.containsKey(idNode)) {
             mapArchivosSupernodos.remove(idNode);
         }
         if (mapClientRMI.containsKey(idNode)) {
@@ -149,19 +149,21 @@ public class SuperNodo {
 
     private boolean addNode(String nodeId, Id node) {
         if (!mapNodes.containsKey(nodeId)) {
-            if (!node.isSuperNode) {
-                node.tiempo.setTiempo(65);
-                Thread t = new Thread(node.tiempo);
-                t.start();
-                if (!mapNodes.containsKey(nodeId)) {
-                    mapNodes.put(nodeId, node);
-                    return true;
+            if (mapNodes.size() < 2) {
+                if (!node.isSuperNode) {
+                    node.tiempo.setTiempo(15);
+                    Thread t = new Thread(node.tiempo);
+                    t.start();
+                    if (!mapNodes.containsKey(nodeId)) {
+                        mapNodes.put(nodeId, node);
+                        return true;
+                    }
                 }
             }
         } else {
             node = mapNodes.get(nodeId);
-            node.tiempo.setTiempo(65);
-
+            node.tiempo.setTiempo(15);
+            return true;
         }
         return false;
     }
@@ -190,9 +192,13 @@ public class SuperNodo {
             @Override
             public void updateSharedFiles(Id idNode, List<Archivo> archivos) {
                 if (idNode.isSuperNode) {
-                    mapArchivosSupernodos.put(idNode.id, archivos);
+                    if (mapSuperNodes.containsKey(idNode.id)) {
+                        mapArchivosSupernodos.put(idNode.id, archivos);
+                    }
                 } else {
-                    mapArchivosNodos.put(idNode.id, archivos);
+                    if (mapNodes.containsKey(idNode.id)) {
+                        mapArchivosNodos.put(idNode.id, archivos);
+                    }
                 }
             }
         };

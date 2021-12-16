@@ -35,6 +35,11 @@ public class ClienteMultidifusion extends ICliente {
         blackList = new ArrayList<>();
     }
 
+    public void restart() {
+        connected = false;
+        time = 0;
+    }
+
     private void isSuperNodo(String hostName, int port) {
         Id id = new Id(hostName, port);
         id.isSuperNode = true;

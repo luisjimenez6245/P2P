@@ -26,6 +26,7 @@ public class Id implements Serializable {
 
     public String id;
     public String host;
+    public int defaultPort;
     public int port;
     public boolean isSuperNode;
     public Tiempo tiempo;

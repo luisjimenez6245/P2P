@@ -13,4 +13,8 @@ public interface IVentanaCallback {
 
     public void setMessage(String message);
 
+    public void setSupernode(String supernodeId);
+
+    public void deleteSupernode();
+
 }

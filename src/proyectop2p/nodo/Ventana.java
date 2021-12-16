@@ -19,8 +19,19 @@ public class Ventana extends javax.swing.JFrame {
         return new IVentanaCallback() {
             @Override
             public void setMessage(String message) {
-                mensaje += "<br/>" + message;
+                mensaje = message + "<br/>" + mensaje;
                 MensajeLabel.setText("<html>" + mensaje + "</html>");
+            }
+
+            @Override
+            public void setSupernode(String supernodeId) {
+                jLabel1.setText("Conectado al Super Nodo: " + supernodeId);
+
+            }
+
+            @Override
+            public void deleteSupernode() {
+                jLabel1.setText("No se está conectado a ningún supernodo");
             }
         };
     }
@@ -65,7 +76,7 @@ public class Ventana extends javax.swing.JFrame {
         jScrollPane1.setViewportView(MensajeLabel);
 
         jLabel1.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
-        jLabel1.setText("Conectado al Super Nodo: ");
+        jLabel1.setText("No se está conectado a ningún supernodo");
         getContentPane().add(jLabel1);
         jLabel1.setBounds(18, 10, 500, 50);
 
@@ -85,9 +96,8 @@ public class Ventana extends javax.swing.JFrame {
 
         MensajeLabel.setVerticalAlignment(JLabel.TOP);
         MensajeLabel.setAutoscrolls(true);
-      
-        
-         jScrollPane1.setAutoscrolls(true);
+
+        jScrollPane1.setAutoscrolls(true);
         getContentPane().add(jScrollPane1);
         jScrollPane1.setBounds(18, 100, 350, 400);
 
@@ -95,7 +105,7 @@ public class Ventana extends javax.swing.JFrame {
         jScrollPane1.setFont(new java.awt.Font("Franklin Gothic Medium", 2, 12)); // NOI18N
         jScrollPane1.setForeground(new java.awt.Color(0, 102, 102));
         jScrollPane1.setViewportView(MensajeLabel);
-        
+
         jLabel3.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         jLabel3.setText("Buscar");
         getContentPane().add(jLabel3);

@@ -19,4 +19,6 @@ public interface FuncionesRMI extends Remote {
     
     public void addFiles(Id id, List<Archivo> archivos) throws RemoteException;
     
+    public Id[] requestFile(String name) throws RemoteException;
+    
 }

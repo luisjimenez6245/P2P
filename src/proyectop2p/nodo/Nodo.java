@@ -55,10 +55,12 @@ public class Nodo {
             selectedId = new Id(host, port);
             clienteRMI = new ClienteRMI(host, port, id);
             boolean b = clienteRMI.connect();
-            try {
-                readFilesFromFolder();
-            } catch (Exception e) {
-                System.out.println(e);
+            if (b) {
+                try {
+                    readFilesFromFolder();
+                } catch (Exception e) {
+                    System.out.println(e);
+                }
             }
             return b;
         } catch (Exception ex) {
@@ -92,8 +94,12 @@ public class Nodo {
             }
 
             @Override
-            public boolean connect(String host, int port) {
-                return connectRMI(host, port);
+            public boolean connect(String hostName, int portHelper) {
+                boolean canConnect = connectRMI(hostName, portHelper);
+                if (canConnect) {
+                    ventanaCallback.setSupernode(hostName + ":" + portHelper);
+                }
+                return canConnect;
             }
 
             @Override
@@ -101,7 +107,9 @@ public class Nodo {
                 boolean canConnect = clienteRMI.connect();
                 if (!canConnect) {
                     ventanaCallback.setMessage("Se ha desconectado de " + selectedId.id);
-                    clienteMultidifusion.connected = false;
+                    clienteMultidifusion.restart();
+                    selectedId = null;
+                    ventanaCallback.deleteSupernode();
                 }
             }
 

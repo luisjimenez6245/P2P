@@ -1,6 +1,7 @@
 package proyectop2p.rmi;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +12,6 @@ public class ServidorRMI implements FuncionesRMI {
 
     private final Id id;
     private final ISupernodeCallback callback;
-    
 
     public ServidorRMI(Id id, ISupernodeCallback callback) {
         super();
@@ -33,7 +33,7 @@ public class ServidorRMI implements FuncionesRMI {
 
     @Override
     public Map<Id, List<Archivo>> getFilesOtherFromSuperNode() throws RemoteException {
-        List<Archivo> archivos =  callback.getArchivos();
+        List<Archivo> archivos = callback.getArchivos();
         Map<Id, List<Archivo>> map = new HashMap<>();
         map.put(id, archivos);
         return map;
@@ -47,6 +47,20 @@ public class ServidorRMI implements FuncionesRMI {
     @Override
     public void addFiles(Id id, List<Archivo> archivos) throws RemoteException {
         callback.updateSharedFiles(id, archivos);
+    }
+
+    @Override
+    public Id[] requestFile(String name) throws RemoteException {
+        List<Archivo> archivos = callback.getArchivos();
+        List<Id> ids = new ArrayList<>();
+        archivos.forEach((t) -> {
+            if (t.name.equals(name) || t.md5.equals(name)) {
+                ids.add(t.id);
+            }
+        });
+        Id[] results = new Id[ids.size()];
+        results = ids.toArray(results);
+        return results;
     }
 
 }

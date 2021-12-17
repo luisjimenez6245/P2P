@@ -63,13 +63,11 @@ public class ClienteDescarga implements Runnable {
             int partNumber,
             int totalParts
     ) {
-        callback.setMessage("intentando connectar a :" + host + ":" + port + " peer:" + partNumber + " totalpeers:" + totalParts);
         try {
             Socket client = new Socket(host, port);
             int buffer = 1024;
             client.setSendBufferSize(buffer);
             client.setReceiveBufferSize(buffer);
-            callback.setMessage("conectado a :" + host + ":" + port + " peer:" + partNumber + " totalpeers:" + totalParts);
             boolean nagle = false;
             DataOutputStream output = new DataOutputStream(client.getOutputStream());
             DataInputStream inputStream = new DataInputStream(client.getInputStream());
@@ -107,7 +105,6 @@ public class ClienteDescarga implements Runnable {
         callback.setMessage("El archivo pesa" + fileSize);
         long bytesToSendhelper = (long) Math.floor(fileSize / totalPeers);
         long bytesToSend = bytesToSendhelper - (bytesToSendhelper % buffer);
-        callback.setMessage("bytesToSendhelper archivo : " + bytesToSend + "");
         long start = (bytesToSend * peerNumber);
         long stop = bytesToSend + start;
         if (peerNumber == 0) {
@@ -126,7 +123,6 @@ public class ClienteDescarga implements Runnable {
             n = inputStream.read(b);
             fileWriter.write(b, 0, n);
             recivedBytes = recivedBytes + n;
-            System.err.println("bytes:" + n + " totales:" + (recivedBytes));
             fileWriter.flush();
         }
         callback.setMessage("Recibimos el archivo: " + fileName + " con éxito");

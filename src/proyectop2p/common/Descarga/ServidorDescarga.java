@@ -3,7 +3,6 @@ package proyectop2p.common.Descarga;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.net.InetAddress;
@@ -73,10 +72,8 @@ public class ServidorDescarga implements Runnable {
         rF.seek(start);
         while (start < stop) {
             int n = rF.read(b);
-
             output.write(b, 0, n);
             start = start + n;
-            System.err.println("bytes:" + n + " totales:" + (start));
             output.flush();
         }
         System.out.println("Archivo: " + fileName + " enviado con éxito");

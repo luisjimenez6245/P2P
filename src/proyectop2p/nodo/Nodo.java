@@ -23,6 +23,7 @@ public class Nodo {
     private ClienteMultidifusion clienteMultidifusion;
     public IVentanaCallback ventanaCallback;
     private ServidorDescarga servidorDescarga;
+    private final List<String> md5HelperOld;
 
     public Nodo(
             String networkInterfaceName,
@@ -32,6 +33,7 @@ public class Nodo {
         this.ip = ip;
         this.port = port;
         this.id = new Id(ip, port);
+        md5HelperOld = new ArrayList<>();
         folder = "/Users/luis/pruebas/" + port + "/";
         this.networkInterfaceName = networkInterfaceName;
 
@@ -41,10 +43,9 @@ public class Nodo {
         List<Archivo> result = new ArrayList<>();
         for (File fileEntry : folder.listFiles()) {
             if (fileEntry.isDirectory()) {
-                listFilesForFolder(fileEntry);
+                result.addAll(listFilesForFolder(fileEntry));
             } else {
                 Archivo helper = new Archivo(id, fileEntry.getName(), folder.getAbsolutePath() + "/" + fileEntry.getName());
-                ventanaCallback.setMessage(helper.toReadbleString());
                 result.add(helper);
             }
         }
@@ -54,7 +55,23 @@ public class Nodo {
     private void readFilesFromFolder() {
         File folderName = new File(folder);
         List<Archivo> archivos = listFilesForFolder(folderName);
-        clienteRMI.updateFiles(archivos);
+        List<String> md5Helper = new ArrayList<>();
+        archivos.forEach((t) -> {
+            String idHelper = t.md5 + t.name;
+            if (!md5HelperOld.contains(idHelper)) {
+                md5Helper.add(idHelper);
+                ventanaCallback.setMessage(t.toReadbleString());
+            }
+        });
+        if (md5Helper.size() > 0 || archivos.size() != md5HelperOld.size()) {
+            clienteRMI.updateFiles(archivos);
+        }
+        md5HelperOld.clear();
+        archivos.forEach((t) -> {
+            String idHelper = t.md5 + t.name;
+            md5HelperOld.add(idHelper);
+        });
+
     }
 
     private boolean connectRMI(String host, int port) {

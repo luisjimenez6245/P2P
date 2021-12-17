@@ -20,11 +20,13 @@ public interface ISupernodeCallback {
     boolean connectNode(Id id);
 
     List<Archivo> getArchivos();
-        List<Archivo> getAllArchivos();
 
+    List<Archivo> getAllArchivos();
+
+    void updateSharedFiles();
 
     void updateSharedFiles(Id id, List<Archivo> archivos);
-    
+
     Archivo[] searchArchivo(String name);
 
 }

@@ -15,6 +15,7 @@ public class ClienteDescarga implements Runnable {
     private final String md5;
     private final String folder;
     private final IDescargaCallback callback;
+    private DataOutputStream fileWriter;
 
     public ClienteDescarga(
             Id[] ids,
@@ -39,17 +40,18 @@ public class ClienteDescarga implements Runnable {
 
     public boolean downloadFromServer() {
         try {
+            fileWriter = new DataOutputStream(new FileOutputStream(folder + fileName));
             for (int i = 0; i < ids.length; ++i) {
                 Id item = ids[i];
                 execute(item.host, item.defaultPort, fileName, i, ids.length);
             }
-            
+            fileWriter.close();
             String md5FromDownload = MD5.obtenerMD5(folder + fileName);
             callback.setMessage("md5 de descarga:" + md5FromDownload);
             callback.setMessage("md5 original:" + this.md5);
             return (md5FromDownload.equals(this.md5));
         } catch (Exception ex) {
-
+            System.out.println(ex);
         }
         return false;
     }
@@ -88,9 +90,12 @@ public class ClienteDescarga implements Runnable {
             callback.setMessage("Comenzando descarga");
             reciveFile(inputStream, buffer, partNumber, totalParts);
             inputStream.close();
+            output.close();
             client.close();
         } catch (IOException | InterruptedException e) {
             System.out.println(e);
+            callback.setMessage("Error en descarga: " + e.getMessage());
+
         }
     }
 
@@ -100,20 +105,23 @@ public class ClienteDescarga implements Runnable {
         long fileSize = inputStream.readLong();
         byte[] b = new byte[buffer];
         callback.setMessage("El archivo pesa" + fileSize);
-
-        long bytesToSend = (long) Math.floor(fileSize / totalPeers);
-        long start = bytesToSend * peerNumber;
+        long bytesToSendhelper = (long) Math.floor(fileSize / totalPeers);
+        long bytesToSend = bytesToSendhelper - (bytesToSendhelper % buffer);
+        callback.setMessage("bytesToSendhelper archivo : " + bytesToSend + "");
+        long start = (bytesToSend * peerNumber);
         long stop = bytesToSend + start;
-
-        if ((peerNumber + 1) == totalPeers && fileSize > stop) {
-            stop = fileSize;
+        if (peerNumber == 0) {
+            start = 0;
+        }
+        if ((peerNumber + 1) == totalPeers) {
+            if (fileSize > stop || fileSize < stop) {
+                stop = fileSize;
+            }
         }
         callback.setMessage("Recibiendo archivo start: " + start + "");
         callback.setMessage("Recibiendo archivo stop: " + stop + "");
         long recivedBytes = start;
         int n;
-                DataOutputStream fileWriter = new DataOutputStream(new FileOutputStream(folder + fileName));
-
         while (recivedBytes < stop) {
             n = inputStream.read(b);
             fileWriter.write(b, 0, n);
@@ -122,8 +130,6 @@ public class ClienteDescarga implements Runnable {
             fileWriter.flush();
         }
         callback.setMessage("Recibimos el archivo: " + fileName + " con éxito");
-        fileWriter.close();
-        Thread.sleep(100);
     }
 
 }

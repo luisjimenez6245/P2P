@@ -35,9 +35,16 @@ public class ClienteRMI {
         }
         return false;
     }
-    
-    
-    public Archivo[] searchArchivo(String name){
+
+    public void forceUpdate() {
+        try {
+            stub.forceUpdate();
+        } catch (RemoteException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    public Archivo[] searchArchivo(String name) {
         try {
             Archivo[] archivos = stub.searchFileSupernode(name, id.id);
             return archivos;
@@ -51,7 +58,7 @@ public class ClienteRMI {
         System.out.println("solicitando actualización");
         try {
             List<Archivo> archivos = stub.getFiles();
-            
+
             return archivos;
         } catch (RemoteException ex) {
             Logger.getLogger(ClienteRMI.class.getName()).log(Level.SEVERE, null, ex);

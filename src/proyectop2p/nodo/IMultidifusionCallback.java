@@ -8,4 +8,7 @@ public interface IMultidifusionCallback {
     
     public void updateSelected();
     
+        public void cleanSuperNode();
+
+    
 }

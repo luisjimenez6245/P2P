@@ -3,6 +3,7 @@ package proyectop2p.nodo;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JOptionPane;
 import proyectop2p.common.Archivo;
 import proyectop2p.common.Descarga.ClienteDescarga;
 import proyectop2p.common.Descarga.IDescargaCallback;
@@ -60,6 +61,8 @@ public class Nodo {
         try {
             System.out.println("intentando conectarse a :" + host + ":" + port);
             selectedId = new Id(host, port);
+            Thread t = new Thread(selectedId.tiempo);
+            t.start();
             clienteRMI = new ClienteRMI(host, port, id);
             boolean b = clienteRMI.connect();
             if (b) {
@@ -104,6 +107,28 @@ public class Nodo {
 
     private void multipleFiles(Archivo[] archivos) {
 
+        String[] md5s = new String[archivos.length];
+        for (int i = 0; i < archivos.length; ++i) {
+            md5s[i] = archivos[i].md5;
+
+        }
+
+        String md5 = (String) JOptionPane.showInputDialog(
+                null,
+                "Se tiene mas de un archivo\n"
+                + "Selecciona uno de los siguientes: ", "MD5",
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                md5s, md5s[0]);
+        if (md5 != null) {
+            for (int i = 0; i < archivos.length; ++i) {
+                if (archivos[i].md5.equals(md5)) {
+                    downloadFile(clienteRMI.requestFile(archivos[i]), archivos[i]);
+                }
+
+            }
+
+        }
     }
 
     public void buscar(String name) {
@@ -183,8 +208,28 @@ public class Nodo {
 
             @Override
             public void updateSelected() {
-                boolean canConnect = clienteRMI.connect();
-                if (!canConnect) {
+                if (selectedId != null && selectedId.tiempo.getTiempo() > 1) {
+                    boolean canConnect = clienteRMI.connect();
+                    selectedId.tiempo.setTiempo(15);
+                    if (!canConnect) {
+                        ventanaCallback.setMessage("Se ha desconectado de " + selectedId.id);
+                        clienteMultidifusion.restart();
+                        selectedId = null;
+                        ventanaCallback.deleteSupernode();
+                    } else {
+                        readFilesFromFolder();
+                    }
+                } else {
+                    ventanaCallback.setMessage("Se ha desconectado de " + selectedId.id);
+                    clienteMultidifusion.restart();
+                    selectedId = null;
+                    ventanaCallback.deleteSupernode();
+                }
+            }
+
+            @Override
+            public void cleanSuperNode() {
+                if (selectedId != null && selectedId.tiempo.getTiempo() < 1) {
                     ventanaCallback.setMessage("Se ha desconectado de " + selectedId.id);
                     clienteMultidifusion.restart();
                     selectedId = null;

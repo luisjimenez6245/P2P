@@ -82,6 +82,13 @@ public class SuperNodo {
         }
     }
 
+    private void requestUpdate() {
+        mapClientRMI.forEach((t, u) -> {
+            List<Archivo> archivos = u.updateFiles();
+            mapArchivosSupernodos.put(t, archivos);
+        });
+    }
+
     private void deleteSuperNode(String idNode, Id item) {
         System.err.println("Super node matar: " + idNode);
         if (mapSuperNodes.containsKey(idNode)) {
@@ -107,6 +114,9 @@ public class SuperNodo {
         if (mapClientRMI.containsKey(idNode)) {
             mapClientRMI.remove(idNode);
         }
+        mapClientRMI.forEach((t, u) -> {
+            u.forceUpdate();
+        });
 
     }
 
@@ -203,10 +213,14 @@ public class SuperNodo {
                         mapArchivosNodos.put(idNode.id, archivos);
                     }
                 }
+                mapClientRMI.forEach((t, u) -> {
+                    u.forceUpdate();
+                });
             }
 
             @Override
             public Archivo[] searchArchivo(String name) {
+                requestUpdate();
                 List<Archivo> archivo = new ArrayList<>();
                 mapClientRMI.forEach((t, u) -> {
                     Archivo[] items = u.searchArchivo(name);
@@ -227,6 +241,11 @@ public class SuperNodo {
                     archivos.addAll(u);
                 });
                 return archivos;
+            }
+
+            @Override
+            public void updateSharedFiles() {
+                requestUpdate();
             }
         };
     }

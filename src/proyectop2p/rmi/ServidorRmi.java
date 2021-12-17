@@ -83,7 +83,7 @@ public class ServidorRMI implements FuncionesRMI {
         List<Archivo> ids = new ArrayList<>();
         List<String> checker = new ArrayList<>();
         archivos.forEach((t) -> {
-            if (t.name.equals(name) && !t.id.id.equals(requestId)) {
+            if ((t.name.equals(name) && !t.id.id.equals(requestId)) || (t.md5.equals(name) && !t.id.id.equals(requestId)) ) {
                 if (!checker.contains(t.md5)) {
                     ids.add(t);
                     checker.add(t.md5);
@@ -98,5 +98,10 @@ public class ServidorRMI implements FuncionesRMI {
             }
         }
         return results;
+    }
+
+    @Override
+    public void forceUpdate() throws RemoteException {
+        callback.updateSharedFiles();
     }
 }

@@ -35,6 +35,7 @@ public class ServidorDescarga implements Runnable {
             callback.setMessage("Se inició el serividor de flujo");
             System.out.println("Se inicio el servidor");
         } catch (IOException ex) {
+            callback.setMessage("Error en envio: " + ex.getMessage());
             Logger.getLogger(ServidorDescarga.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -53,11 +54,18 @@ public class ServidorDescarga implements Runnable {
         String fileName = file.getAbsolutePath();
         callback.setMessage("Enviando archivo: " + fileName + "");
         byte[] b = new byte[buffer];
-        long bytesToSend = (long) Math.floor(fileSize / totalPeers);
-        long start = bytesToSend * peerNumber;
+        long bytesToSendhelper = (long) Math.floor(fileSize / totalPeers);
+        long bytesToSend = bytesToSendhelper - (bytesToSendhelper % buffer);
+        callback.setMessage("bytesToSendhelper archivo : " + bytesToSend + "");
+        long start = (bytesToSend * peerNumber);
         long stop = bytesToSend + start;
-        if ((peerNumber + 1) == totalPeers && fileSize > stop) {
-            stop = fileSize;
+        if (peerNumber == 0) {
+            start = 0;
+        }
+        if ((peerNumber + 1) == totalPeers) {
+            if (fileSize > stop || fileSize < stop) {
+                stop = fileSize;
+            }
         }
         callback.setMessage("Enviando archivo start: " + start + "");
         callback.setMessage("Enviando archivo stop: " + stop + "");
@@ -110,6 +118,7 @@ public class ServidorDescarga implements Runnable {
                 outputStream.close();
                 client.close();
             } catch (IOException exception) {
+                callback.setMessage("Error en envio: " + exception.getMessage());
                 System.err.println(exception);
             }
 

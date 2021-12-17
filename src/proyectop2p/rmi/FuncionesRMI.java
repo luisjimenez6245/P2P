@@ -25,4 +25,6 @@ public interface FuncionesRMI extends Remote {
 
     public Id[] requestFile(String name, String requestId) throws RemoteException;
 
+    public void forceUpdate() throws RemoteException;
+
 }

@@ -38,6 +38,8 @@ public class ClienteMultidifusion extends ICliente {
     public void restart() {
         connected = false;
         time = 0;
+         blackList.clear();
+        superNodes.clear();
     }
 
     private void isSuperNodo(String hostName, int port) {
@@ -70,6 +72,7 @@ public class ClienteMultidifusion extends ICliente {
                 break;
             }
         }
+        blackList.clear();
         superNodes.clear();
     }
 
@@ -150,6 +153,7 @@ public class ClienteMultidifusion extends ICliente {
             }
 
         }
+        callback.cleanSuperNode();
 
     }
 
@@ -160,7 +164,7 @@ public class ClienteMultidifusion extends ICliente {
             Thread.sleep(1000);
             return;
         }
-        if (time > 30) {
+        if (time > 10) {
             tryToConnect();
         } else {
             searchForSupernodes();
